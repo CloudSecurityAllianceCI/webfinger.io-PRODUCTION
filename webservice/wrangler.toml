@@ -6,10 +6,12 @@ compatibility_date = "2022-12-06"
 [env.production]
 name = "webfingerio-prod-new"
 vars = { ENVIRONMENT = "production" }
+
 kv_namespaces = [
-    {binding = "webfingerio_prod_auth", id = ""},
-    {binding = "webfingerio_prod_data", id = ""}
+    {binding = "webfingerio_prod_auth", id = "1c742b5f453d42f68cedcec2ff075cb9"},
+    {binding = "webfingerio_prod_data", id = "a91e37828ff14d838fdab5e4b689520f"}
 ]
+
 routes = [
   "webfinger.io/",
   "webfinger.io/robots.txt",

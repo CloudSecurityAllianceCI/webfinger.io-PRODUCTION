@@ -11,7 +11,10 @@ export function gethtmlContentRegistration(status) {
 <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1>
 
 <p>Simply fill out this form, you'll get a confirmation email with a link, click the link and people can verify you 
-at @yourname_domain@webfinger.io and if you point your webfinger service at webfinger.io searching for @yourname@domain will work.</p>
+by searching in a Mastodon client for @yourname_domain@webfinger.io and if you point your webfinger service at 
+webfinger.io searching for @yourname@domain will work.</p>
+
+
 
 <form action="https://` + globalDomain + `/apiv1/processing" method="post">
 <label for="email_address">Email address (mandatory, name@email.tld):</label>
@@ -39,7 +42,8 @@ also support administrative blocklists for both emails and Mastodon IDs, e.g. we
 to use this service, contact us at admin at webfinger.io. We also restrict the length and format of emails and Mastodon IDs to 128 
 characters. This service runs on Cloudflare Workers and KV store, and uses Mailchannels to send the emails.</p>
 
-<p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</p>
+<p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+<a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
 
 </form>
 </body>

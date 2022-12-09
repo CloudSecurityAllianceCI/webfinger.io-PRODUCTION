@@ -17,5 +17,6 @@ routes = [
   "webfinger.io/favicon.ico",
   "webfinger.io/robots.txt",
   "webfinger.io/.well-known/*",
+  "webfinger.io/verified-email/*",
   "webfinger.io/apiv1/*",
 ]

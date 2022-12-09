@@ -154,7 +154,7 @@ async function readProcessingRequestBody(request) {
   email_data = {};
   email_data["domain"] = "webfinger.io";
   email_data["to_email"] = request["email_address"];
-  email_data["from"] = "noreply@mailchannels.webfinger.io";
+  email_data["from"] = "noreply@webfinger.io";
   email_data["from_name"] = "webfinger.io Email Verification Service";
   email_data["reply-to"] = "admin@webfinger.io";
   email_data["reply-to_name"] = "webfinger.io Email Verification Admin";

@@ -20,11 +20,16 @@ export function gethtmlContentRegistration(status, data) {
     htmlContent["registration"] = `    
     <p>Simply fill out this form, you'll get a confirmation email with a link, click the link and people can verify you 
     by searching in a Mastodon client for @yourname_domain@webfinger.io and if you point your webfinger service at 
-    webfinger.io searching for @yourname@domain will work.</p>
+    webfinger.io searching for @yourname@domain will work. You can also use web page verification via 
+    https://webfinger.io/verified-email/yourname@domain</p>
     `;
 
-    htmlContent["verified-email"] = `<p><a rel="me" href="https://mastodon.social/@MASTODON_ID">EMAIL_ADDRESS was verified by
-    webfinger.io</a></p>`;
+    htmlContent["verified-email"] = `
+    <a rel="me" href="https://mastodon.social/@MASTODON_ID">Mastodon</a>
+
+    <p>EMAIL_ADDRESS has been verified by webfinger.io and is linked to MASTODON_ID.</p>
+
+    `;
 
     htmlContent["no-verified-email"] = `<p>No verified email found</p>`;
     

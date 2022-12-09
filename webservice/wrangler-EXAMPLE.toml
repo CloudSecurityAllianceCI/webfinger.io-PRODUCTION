@@ -12,10 +12,8 @@ kv_namespaces = [
 ]
 routes = [
   "webfinger.io/",
+  "webfinger.io/favicon.ico",
   "webfinger.io/robots.txt",
-  "webfinger.io/.well-known/security.txt",
-  "webfinger.io/.well-known/webfinger*",
-  "webfinger.io/apiv1/processing*",
-  "webfinger.io/apiv1/confirmation*",
-  "webfinger.io/testing*"
+  "webfinger.io/.well-known/*",
+  "webfinger.io/apiv1/*",
 ]

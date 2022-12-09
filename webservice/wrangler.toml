@@ -5,7 +5,6 @@ compatibility_date = "2022-12-06"
 
 [env.production]
 name = "webfingerio-prod-new"
-vars = { ENVIRONMENT = "production" }
 
 kv_namespaces = [
     {binding = "webfingerio_prod_auth", id = "1c742b5f453d42f68cedcec2ff075cb9"},
@@ -20,3 +19,10 @@ routes = [
   "webfinger.io/verified-email/*",
   "webfinger.io/apiv1/*",
 ]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+DKIM_DOMAIN = "webfinger.io"
+DKIM_SELECTOR = "mailchannels"
+DKIM_PRIVATE_KEY = "MIIEpAIBAAKCAQEAsHHyJA6+nbYDWJ9RJ96YO0KYGLUxCOq48UsPvOrlLeUmlYpWoKxl0imHsURLnGNMRP49u1NRSwP2DlEm90Wf1sOjeQXNn4Cc+7WXAwoj7owRbRg8GIe+/VOLQWOV9mkPuDLi0CbrL3nYCHrEQ4Ucg7T1Ve/89c5gWCncJ1W+Wmaoj/DGHhwodPdTVrpoVi+XDu5RlF8MeJXp+EtCHZGH6tb/POq8gbPa4BwRtl3CNrb5FRvrSLasb797sIIzXCvpUSZsPxDi7qjoeFP7sHCXAm60IYbGVET+un7Xls+ov4J3dF3ZFqhuJu67Qlop3e96ivjRryH1Xhko/eI9MSZxkQIDAQABAoIBAHJqIQsyqHZaLYdNH/ILjIl44Gm9LMPMeQq2ksj9RIljO4biwtPDlu8V0RCo6aLKXQ2sE1miaGeNdQPJqcvUURaRnDKBCdoxKxqpoPfunmg0WaR1f5qkg7t/biCDtB2p+PCHxr4VTpJlnym4egYSje/16tTEHzNBlQX2dvTmy92P+dv/w+oOddwak7pYTBB64+xeh0ohrnWeOwa19DMpxK6oIb0sh1lqPkoWaeRCVbQ5WXNx8FHstbFYjOXymZDonB8i5WKw50aa3R0hsbxuZEE2EHEjBC98f+eYp2AS6FCs9ZoQBQewbNKxJnvYoof/IHvb8Vnryv54WRVXnyT/ALUCgYEA45ppVVXT2i5Otu3xAsvh1x2aVpIZUuDhhTwg4sG7jUi0bHHX8aTubgS8M+Kmu5RRKU4Jlr5ogomMhXbk4Ay9eEh+wOzjkOUNZl1ILaJTMo7ViTWz2kdcMizTU412oFQ0qs7+wetLCilWIlnje5AqAP0Z3I7/4ZCxUu846GjjFLsCgYEAxnWO9X9GoCZzspP0R1l61i57AwK/mRqF0YQVJpBuYtIziNPqOuDPSD3ImV9tWmmDX4XAY0aSYZirV9J5tW5xEVtbk9eU8E7PT1X2J9Xcw2XCZc9mb0qSjT217m1eKbdQAKN7cdf9k5XNsoizOCb0gD2ozpKyIPHuzK4J+4u0FCMCgYEA0ibg20pEMlBPndhVkJ9wB4/t0cFUYJIDqWG7e6Ql6G4ZKYh0O0puXGdC3yWHjeuEhP7pG6b0GJOojBMbgURCLa3CW6Be/op/tOSsoHYhG62GvQo45nK9ThbViXA0+BTIDG7UC3mV7+v6+/zDbnPOVNtd5aij20IeeNUpVm6CPcECgYEAsIak0K2TbqSFSRTdthFbd+QEOxtYvaCf40svXQwfg/shJ9YHhLOu7L04D2SYalFsL61TAXsmfXVFA2sOI1nHbP7sKEccDdyr/g+iUrCiG5QKJHEk1l1omgWILDpQBZ8upELGbO8IeRxIyUNa1tmfpeoymvxVQYSxOpKcAomzdi0CgYBep8pNFRaCCf3RsAttP+CpHFWf2d0fzcJwbsqfYzY3DXHMJBElXnaFaaFGOsBduzS8obIr8P1+57+Sw7iVW04ALRurBDBfFVeYbjZZSaxzriCBu132OgCZvkNe6FqNG6ORcSbn/s8wTV5w+7lOCv5tpTPW0gnPaYNY9MtXeCFjYA=="
+

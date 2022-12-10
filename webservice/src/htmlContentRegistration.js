@@ -17,13 +17,6 @@ export function gethtmlContentRegistration(status, data) {
     <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1>
     `;
 
-    htmlContent["registration"] = `    
-    <p>Simply fill out this form, you'll get a confirmation email with a link, click the link and people can verify you 
-    by searching in a Mastodon client for @yourname_domain@webfinger.io and if you point your webfinger service at 
-    webfinger.io searching for @yourname@domain will work. You can also use web page verification via 
-    https://webfinger.io/verified-email/yourname@domain</p>
-    `;
-
     htmlContent["verified-email"] = `
     <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">Mastodon</a>
 
@@ -45,12 +38,18 @@ export function gethtmlContentRegistration(status, data) {
     <input type="submit" value="submit" name="submit">
     
     <p>webfinger.io is a public webfinger service that lets you link your Mastodon ID to your email address. webfinger.io
-    requires strong proof of control of the email address to prevent abuse, and to ensure only the rightful owner of the email
-    address can link a Mastodon ID to it.</p>
+    requires strong proof of control of the email address to ensure only the rightful owner of the email address can link it 
+    to a Mastodon ID.</p>
     
-    <p>People can then verify your email address is linked to your Mastodon ID by searching for the alias @username_emaildomain@webfinger.io 
-    or if you control your domain and redirect /.well-known/webfinger to https://webfinger.io/.well-known/webfinger by searching for your email
-    in the form of a Mastodon ID @username@emaildomain
+    <h2>Using webfinger.io</h2>
+
+    <ul>
+    <li>Search field: @yourname_domain@webfinger.io</li>
+    <li>If you redirect your webfinger to us: @yourname@domain</li>
+    <li>Profile metadata verification: simply add a link like https://webfinger.io/verified-email/yourname@domain</li>
+    </ul>
+
+    <p>To let people search for your email, simply redirect https://yourdomain/.well-known/webfinger to https://webfinger.io/.well-known/webfinger and it'll work.</p>
     
     <h2>Security and anti-abuse</h2>
     

@@ -12,7 +12,10 @@ export function gethtmlContentRegistration(status, data) {
     let replyContent = "";
     htmlContent["header"] = `
     <!DOCTYPE html>
+    <head>
     <title>webfinger.io (a Cloud Security Alliance Research beta)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
     <body>
     <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1>
     `;

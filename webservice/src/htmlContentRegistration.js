@@ -34,8 +34,8 @@ export function gethtmlContentRegistration(status, data) {
 
     htmlContent["verifiedemail"] = `
 
-    <p>EMAIL_ADDRESS has been verified by webfinger.io and is linked to 
-    <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</p>
+    <p><strong>EMAIL_ADDRESS has been verified by webfinger.io and is linked to 
+    <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
@@ -125,8 +125,95 @@ export function gethtmlContentRegistration(status, data) {
     </body>
     </html>
     `;
-    if (status == "success") {
+
+htmlContent["newregistration"] = `
+
+    <p><strong>webfinger.io new registration page</strong></p>
+
+    <form action="https://` + globalDomain + `/apiv1/processing" method="post">
+    
+    <p>Link your Mastodon ID to your email, Twitter or LinkedIN:</p>
+
+    <label for="mastodon_id">Mastodon ID:</label>
+    <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server">
+
+    <p>To link to Twitter or LinkedIN simply create a tweet or post containing the string:</p>
+    
+    <p><strong>UUID</strong></p>
+    
+    <p>and provide the link to it here so webfinger.io can verify you control that account:</p>
+
+    <label for="twitter">Twitter url to your tweet:</label>
+    <input type="text" id="twitter" name="twitter" placeholder="https://twitter.com/[yourname]]/status/012345678912345">
+
+    <label for="linkedin">LinkedIN url to your post:</label>
+    <input type="text" id="linkedin" name="linkedin" placeholder="https://www.linkedin.com/posts/yourname_purple-monkey-dishwasher-activity-987324392874233-vRAC">
+
+    <p>You can also link your email to a Mastodon ID:</p>
+
+    <label for="email_address">Email address (mandatory, name@email.tld):</label>
+    <input type="email" id="email_address" name="email_address" placeholder="username@example.org">
+
+    <p>Finally if you want to unsubscribe and block all email from us, or delete your records simply click below</p>
+    
+    <input type="radio" id="block_email" name="action" value="block_email">
+    <label for="block_email" class="label-inline">Unsubscribe and block all future email</label><br>
+    
+    <input type="radio" id="delete_record" name="action" value="delete_record">
+    <label for="delete_record" class="label-inline">Delete the record for my email address</label><br>
+
+    <input type="submit" value="submit" name="submit">
+    </form>
+
+    <p>webfinger.io is a public webfinger service that lets you link your Mastodon ID to your email address. webfinger.io
+    requires strong proof of control of the email address to ensure only the rightful owner of the email address can link it 
+    to a Mastodon ID.</p>
+    
+    <h2>Using webfinger.io</h2>
+
+    <ul>
+    <li>Search field: @yourname_emaildomain@webfinger.io</li>
+    <li>If you redirect your webfinger to us: @yourname@emaildomain</li>
+    <li>Mastodon profile metadata verification: simply add a link like https://webfinger.io/yourname@emaildomain</li>
+    </ul>
+
+    <p>To let people search for your email, simply redirect https://youremaildomain/.well-known/webfinger to https://webfinger.io/.well-known/webfinger and it'll work.</p>
+    
+    <h2>Security and anti-abuse</h2>
+    
+    <p>We've taken several steps to ensure this service is safe and respects users privacy. We only ask for the data you want us to serve 
+    (your email and Mastodon ID). We support email addresses deleting their record, and marking themselves as "do not contact". We 
+    also support administrative blocklists for both emails and Mastodon IDs, e.g. we can block "example.org" if you do not want your users 
+    to use this service, contact us at admin at webfinger.io. We also restrict the length and format of emails and Mastodon IDs to 128 
+    characters. This service runs on Cloudflare Workers and KV store, and uses Mailchannels to send the emails. These providers log data such 
+    as IP addresses accessing their service and the email address of email sent.</p>
+    
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+    `;
+
+    if (status == "registration") {
         replyContent = htmlContent["header"] + htmlContent["registration"];
+        return replyContent;
+    }
+    if (status == "newregistration") {
+        let new_content = "";
+        if (data["uuid"]) {
+            new_content = htmlContent["newregistration"].replace(/UUID/g, data["uuid"]);
+            htmlContent["newregistration"] = new_content;
+        } 
+        else {
+            return false;
+        }
+        replyContent = htmlContent["header"] + htmlContent["newregistration"];
         return replyContent;
     }
     else if (status == "verifiedemail") {

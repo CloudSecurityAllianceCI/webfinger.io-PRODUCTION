@@ -271,7 +271,13 @@ async function handleGETRequest(requestData) {
 		return new Response(getsecuritytxt(), {status: "200", headers: {"content-type": "text/plain"}});
 	} 
   else if (requestURL.pathname === "/") {
-    htmlContent = gethtmlContentRegistration("success");
+    htmlContent = gethtmlContentRegistration("registration");
+    return new Response(htmlContent, {status: "200", headers: {'content-type': 'text/html;charset=UTF-8'}});
+	} 
+  else if (requestURL.pathname === "/new") {
+    let initial_data = {};
+    initial_data["uuid"] = uuidv4();
+    htmlContent = gethtmlContentRegistration("newregistration", initial_data);
     return new Response(htmlContent, {status: "200", headers: {'content-type': 'text/html;charset=UTF-8'}});
 	} 
   else if (requestURL.pathname === "/apiv1/processing") {

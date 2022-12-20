@@ -93,8 +93,12 @@ async function readGETRequestParams(searchParams) {
 
 
 async function readProcessingRequestBody(request) {
-  //return new Response(JSON.stringify(request), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  
+  // TODO: UPDATE LOGIC
+
+  // if unsubscribe or delete requires email address
+
+  // else if need mastodon ID and at least one of email/github/etc.
+
   // error handling first
   if (request["action"] === false) {
     return new Response("ERROR: action is false", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
@@ -290,10 +294,35 @@ async function handleGETRequest(requestData) {
     replyBody = handleConfirmationGETRequest(reqBody);
     return replyBody;
 	} 
+  // startsWith @ means twitter
+  else if (requestURL.pathname.startsWith("/@")) {
+    return new Response("Twitter account", {status: "200", headers: {"content-type": "text/plain"}});
+    //replyBody = await handleVerifiedEmailGETRequest(requestURL.pathname);
+    //return replyBody;
+	} 
+  // an @ in it means it's an email
   else if (requestURL.pathname.includes("@")) {
     replyBody = await handleVerifiedEmailGETRequest(requestURL.pathname);
     return replyBody;
 	} 
+  // /GitHub/*
+  // /u/* reddit
+  // /LinkedIn/*
+  // /HackerNews/*
+  // /Instagram/*
+  // /TikTok/*
+  // /FaceBook/*
+  // /YouTube/*
+  // /WhatsApp/*
+  // /WeChat/*
+  // /dns/*
+  // 
+  // Things we explicitly will not support:
+  // Phone numbers
+  // Physical addresses
+  // Gov ID numbers
+  // Because PII concerns, and we can't verify them safely
+  // 
   ////////////////////////////////////////////////////
   // Testing
   // test via

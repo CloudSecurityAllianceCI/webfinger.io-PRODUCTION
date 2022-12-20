@@ -22,6 +22,15 @@ export function strictNormalizeEmailAddress(email_address) {
 	return final_email_address;
 }
 
+export function strictNormalizeGitHub(github_id_value) {
+	var re_github_id = new RegExp("^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$");
+	if (re_github_id.test(github_id_value)) {
+		return(github_id_value);
+	} else {
+		return false;
+	}
+}
+
 export function strictNormalizeUUID(uuid_value) {
 	var re_uuid = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$");
 	if (re_uuid.test(uuid_value)) {
@@ -44,29 +53,30 @@ export function basicEscapeHTML(unsafe) {
 // filename: ./src/strictNormalize.js
 export function strictNormalizeWebData(requestdata) {
 	// returns a normalized data structre or false if things are wrong/missing
+	// LOGIC:
+	// if block_email or delete_record
+	// we MUST have an email
+
 	// we must have an action and an email_address
 	// if action === link_mastodon_id we must have a mastdon_id
 	// we should have a token but if not, setting it to "" is fine because we'll never find it
 	
 	let normalized_data = {};
 
-	// check for action, explicitly 1 of 3 values, return false if missing or wrong
+	// check for action, explicitly 1 of 2 values, assume linking if not
 	if (requestdata["action"]) {
-		if (requestdata["action"] === "link_mastodon_id") {
-			normalized_data["action"] = "link_mastodon_id";
-		}
-		else if (requestdata["action"] === "block_email") {
+		if (requestdata["action"] == "block_email") {
 			normalized_data["action"] = "block_email";
 		}
-		else if (requestdata["action"] === "delete_record") {
+		else if (requestdata["action"] == "delete_record") {
 			normalized_data["action"] = "delete_record";
 		}
 		else {
-			normalized_data["action"] = false;
+			normalized_data["action"] = "link_mastodon_id";
 		}
 	}
 	else {
-		normalized_data["action"] = false;
+		normalized_data["action"] = "link_mastodon_id";
 	}
 
 	// check for email, set to false if not present, normalize, which sets ot false if it is mangled
@@ -77,10 +87,19 @@ export function strictNormalizeWebData(requestdata) {
 		normalized_data["email_address"] = false;
 	}
 
-	// check for a mastodon_id if action === link_mastodon_id and then normalize
+	// check for GitHub ID, set to false if not present, normalize, which sets ot false if it is mangled
+	if (requestdata["github_id"]) {
+		normalized_data["github_id"] = strictNormalizeGitHub(requestdata["github_id"]);
+	}
+	else {
+		normalized_data["github_id"] = false;
+	}
+	
+
+	// check for a mastodon_id if action == link_mastodon_id and then normalize
 	if (normalized_data["action"] == "link_mastodon_id") {
 		if (requestdata["mastodon_id"]) {
-			// check for starrting @
+			// check for starting @
 			if (requestdata["mastodon_id"].match(/^@/)) {
 				mastodon_id_raw = requestdata["mastodon_id"].replace(/^@/, "");
 				mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);

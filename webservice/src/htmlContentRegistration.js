@@ -70,7 +70,7 @@ export function gethtmlContentRegistration(status, data) {
     
     `;
     
-    htmlContent["registration"] = `
+    htmlContent["oldregistration"] = `
     <form action="https://` + globalDomain + `/apiv1/processing" method="post">
     
     <label for="email_address">Email address (mandatory, name@email.tld):</label>
@@ -126,35 +126,26 @@ export function gethtmlContentRegistration(status, data) {
     </html>
     `;
 
-htmlContent["newregistration"] = `
+htmlContent["registration"] = `
 
     <p><strong>webfinger.io new registration page</strong></p>
 
     <form action="https://` + globalDomain + `/apiv1/processing" method="post">
     
-    <p>Link your Mastodon ID to your email, Twitter or LinkedIN:</p>
+    <p>Link your social accounts and/or email to your Mastodon ID:</p>
 
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server">
-
-    <p>To link to Twitter or LinkedIN simply create a tweet or post containing the string:</p>
     
-    <p><strong>UUID</strong></p>
-    
-    <p>and provide the link to it here so webfinger.io can verify you control that account:</p>
+    <label for="github_id">GitHub ID: (not implemented yet)</label>
+    <input type="text" id="github_id" name="github_id" placeholder="githubusername or org">
 
-    <label for="twitter">Twitter url to your tweet:</label>
-    <input type="text" id="twitter" name="twitter" placeholder="https://twitter.com/[yourname]]/status/012345678912345">
-
-    <label for="linkedin">LinkedIN url to your post:</label>
-    <input type="text" id="linkedin" name="linkedin" placeholder="https://www.linkedin.com/posts/yourname_purple-monkey-dishwasher-activity-987324392874233-vRAC">
-
-    <p>You can also link your email to a Mastodon ID:</p>
-
-    <label for="email_address">Email address (mandatory, name@email.tld):</label>
+    <label for="email_address">Email address:</label>
     <input type="email" id="email_address" name="email_address" placeholder="username@example.org">
 
-    <p>Finally if you want to unsubscribe and block all email from us, or delete your records simply click below</p>
+    <input type="submit" value="submit" name="submit">
+
+    <p>Click below to unsubscribe and block all email from us, or delete your email record:</p>
     
     <input type="radio" id="block_email" name="action" value="block_email">
     <label for="block_email" class="label-inline">Unsubscribe and block all future email</label><br>
@@ -162,7 +153,6 @@ htmlContent["newregistration"] = `
     <input type="radio" id="delete_record" name="action" value="delete_record">
     <label for="delete_record" class="label-inline">Delete the record for my email address</label><br>
 
-    <input type="submit" value="submit" name="submit">
     </form>
 
     <p>webfinger.io is a public webfinger service that lets you link your Mastodon ID to your email address. webfinger.io
@@ -199,6 +189,8 @@ htmlContent["newregistration"] = `
     </body>
     </html>
     `;
+
+    htmlContent["newregistration"] = htmlContent["registration"];
 
     if (status == "registration") {
         replyContent = htmlContent["header"] + htmlContent["registration"];

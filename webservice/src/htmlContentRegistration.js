@@ -135,7 +135,7 @@ htmlContent["registration"] = `
     <p>Link your social accounts and/or email to your Mastodon ID:</p>
 
     <label for="mastodon_id">Mastodon ID:</label>
-    <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server">
+    <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
     
     <label for="github_id">GitHub ID: (not implemented yet)</label>
     <input type="text" id="github_id" name="github_id" placeholder="githubusername or org">

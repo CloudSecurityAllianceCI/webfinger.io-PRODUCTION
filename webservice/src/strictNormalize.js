@@ -22,6 +22,58 @@ export function strictNormalizeEmailAddress(email_address) {
 	return final_email_address;
 }
 
+export function strictNormalizeMastodon(mastodon_id_value) {
+	// @username@mastodon.server or mastodon.server/@username
+	// strip any http:// or https://
+	//
+	if (mastodon_id_value.startsWith("@")) {
+		mastodon_id_raw = mastodon_id_value.replace(/^@/, "");
+		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
+		if (mastodon_id_normalized === false) {
+			return false;
+		}
+		else {
+			return "@" + mastodon_id_normalized;
+		}
+	}
+	else if (mastodon_id_value.startsWith("https://")) {
+		mastodon_id_raw_url = mastodon_id_value.replace(/^https:\/\//, "");
+		mastodon_id_array = mastodon_id_raw_url.split("/@");
+		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
+		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
+		if (mastodon_id_normalized === false) {
+			return false;
+		}
+		else {
+			return "@" + mastodon_id_normalized;
+		}
+	}
+	else if (mastodon_id_value.startsWith("http://")) {
+		mastodon_id_raw_url = mastodon_id_value.replace(/^https:\/\//, "");
+		mastodon_id_array = mastodon_id_raw_url.split("/@");
+		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
+		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
+		if (mastodon_id_normalized === false) {
+			return false;
+		}
+		else {
+			return "@" + mastodon_id_normalized;
+		}
+	}
+	// assume something like servername/@username
+	else {
+		mastodon_id_array = mastodon_id_value.split("/@");
+		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
+		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
+		if (mastodon_id_normalized === false) {
+			return false;
+		}
+		else {
+			return "@" + mastodon_id_normalized;
+		}
+	}
+}
+
 export function strictNormalizeGitHub(github_id_value) {
 	var re_github_id = new RegExp("^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$");
 	if (re_github_id.test(github_id_value)) {
@@ -58,7 +110,7 @@ export function strictNormalizeWebData(requestdata) {
 	// we MUST have an email
 
 	// we must have an action and an email_address
-	// if action === link_mastodon_id we must have a mastdon_id
+	// if action === link_mastodon_id we must have a mastodon_id
 	// we should have a token but if not, setting it to "" is fine because we'll never find it
 	
 	let normalized_data = {};
@@ -96,34 +148,20 @@ export function strictNormalizeWebData(requestdata) {
 	}
 	
 
-	// check for a mastodon_id if action == link_mastodon_id and then normalize
-	if (normalized_data["action"] == "link_mastodon_id") {
-		if (requestdata["mastodon_id"]) {
-			// check for starting @
-			if (requestdata["mastodon_id"].match(/^@/)) {
-				mastodon_id_raw = requestdata["mastodon_id"].replace(/^@/, "");
-				mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
-				if (mastodon_id_normalized === false) {
-					normalized_data["mastodon_id"] = false;
-				}
-				else {
-					normalized_data["mastodon_id"] = "@" + mastodon_id_normalized;
-				}
-			}
-			else {
-				mastodon_id_normalized = strictNormalizeEmailAddress(requestdata["mastodon_id"]);
-				if (mastodon_id_normalized === false) {
-					normalized_data["mastodon_id"] = false;
-				}
-				else {
-					normalized_data["mastodon_id"] = "@" + mastodon_id_normalized;
-				}
-			}
-		}
-		else {
+	if (requestdata["mastodon_id"]) {
+		mastodon_id_normalized = strictNormalizeMastodon(requestdata["mastodon_id"]);
+		if (mastodon_id_normalized === false) {
 			normalized_data["mastodon_id"] = false;
 		}
+		else {
+			normalized_data["mastodon_id"] = mastodon_id_normalized;
+		}
 	}
+	else {
+		normalized_data["mastodon_id"] = false;
+	}
+	
+
 	// check for token
 	if (requestdata["token"]) {
 		normalized_data["token"] = strictNormalizeUUID(requestdata["token"]);

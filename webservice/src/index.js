@@ -108,7 +108,7 @@ async function readProcessingRequestBody(request) {
   }
   else if (request["action"] === "link_mastodon_id") {
     if (request["mastodon_id"] === false) {
-      return new Response("ERROR: Mastodon ID is false", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+      return new Response("ERROR: Mastodon ID is false " + JSON.stringify(request), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
   }
 

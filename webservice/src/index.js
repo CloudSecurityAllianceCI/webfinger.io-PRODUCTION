@@ -100,110 +100,122 @@ async function readProcessingRequestBody(request) {
   // else if need mastodon ID and at least one of email/github/etc.
 
   // error handling first
-  if (request["action"] === false) {
-    return new Response("ERROR: action is false", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+  if (request["action"] == "block_email" || request["action"] == "delete_record") {
+    if (request["email_address"] === false) {
+      return new Response("ERROR: We can't block email without an email address", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
   }
-  else if (request["email_address"] === false) {
-    return new Response("ERROR: email is false", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-  else if (request["action"] === "link_mastodon_id") {
+  else if (request["action"] == "link_mastodon_id") {
     if (request["mastodon_id"] === false) {
-      return new Response("ERROR: Mastodon ID is false " + JSON.stringify(request), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+      return new Response("ERROR: We can't link something to a Mastodon ID without a Mastodon ID", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
   }
 
-  // Check if email is blocked, this simplifies the logic later on
-  block_email = "No";
-  
-  KVkeyArray = request["email_address"].split("@");
-  KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
-  const KVDataResult = await webfingerio_prod_data.get(KVkeyValue);
-  // remember if no record it returns null, so if it exists we have a record
-  if (KVDataResult) {
-    KVDataResultJSON = JSON.parse(KVDataResult);
-    if (KVDataResultJSON["block_email"] == "Yes") {
-      block_email = "Yes";
-      // return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-    }
-  }
-
-  // KV STORE KEY
-  KVkeyArray = request["email_address"].split("@");
-  KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
-  const KVauthresult = await webfingerio_prod_auth.get(KVkeyArray);
-
-  // if we find an auth record that means we have a unique key already set (which expires after one hour) so set to no email
-  // and continue so we don't leak info
-  if (KVauthresult) {
-    block_email = "Yes";
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-
-  // Generate a unique ID
+  // Generate a unique ID early on, we'll need it in a few places (each record type)
   uuid_value = uuidv4();
 
+  // The KV auth data is always the same, multiple records, e.g. email:, github:
   KVauthdata = {};
   KVauthdata["token"] = uuid_value;
 
   KVauthdataJSONString = JSON.stringify(KVauthdata);
 
-  // Set a one hour time limit, this limits activity and means we don't have to do cleanup if anything fails
-  // Don't set keys if block_email = "Yes";
-  if (block_email == "No") {
+
+  // return new Response("EMAIL ADDRESS: " + request["email_address"], {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+
+  // TODO: break into chunks and respond in blocks and than parse it all up
+
+  //////////////////////////////////////////////////////////////
+  // Check if an email was specified and then check if we email it or not
+
+  // Check if email is blocked, this simplifies the logic later on
+  if (request["email_address"] != false) {
+
+    block_email = "No";
+    
+    KVkeyArray = request["email_address"].split("@");
+    KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
+    const KVDataResult = await webfingerio_prod_data.get(KVkeyValue);
+    // remember if no record it returns null, so if it exists we have a record
+    if (KVDataResult) {
+      KVDataResultJSON = JSON.parse(KVDataResult);
+      if (KVDataResultJSON["block_email"] == "Yes") {
+        block_email = "Yes";
+        // return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+      }
+    }
+
     // KV STORE KEY
     KVkeyArray = request["email_address"].split("@");
     KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
-    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
-  }
-  // TODO: ENV VRIABLES FROM/REPLYTO
-  email_data = {};
-  email_data["domain"] = "webfinger.io";
-  email_data["to_email"] = request["email_address"];
-  email_data["from"] = "noreply@webfinger.io";
-  email_data["from_name"] = "webfinger.io Email Verification Service";
-  email_data["reply-to"] = "admin@webfinger.io";
-  email_data["reply-to_name"] = "webfinger.io Email Verification Admin";
-  // TODO: change subject to include random value (click link?) so gmail doesn't thread them
-  
-  email_data["subject"] = "webfinger.io Email verification";
-  // These env variables need to be set in wrangler.toml
-  // See docs.webfinger.io/DKIM-setup.md for setup details
-  email_data["DKIM_DOMAIN"] = DKIM_DOMAIN;
-  email_data["DKIM_SELECTOR"] = DKIM_SELECTOR;
-  email_data["DKIM_PRIVATE_KEY"] = DKIM_PRIVATE_KEY;
+    const KVauthresult = await webfingerio_prod_auth.get(KVkeyArray);
 
-  user_data = {};
-  // We always have a uuid and email
-  user_data["token"] = uuid_value;
-  // TODO: check if it fails here.
-  user_data["email_address"] = request["email_address"];
+    // if we find an auth record that means we have a unique key already set (which expires after one hour) so set to no email
+    // and continue so we don't leak info
+    if (KVauthresult) {
+      block_email = "Yes";
+      return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
+    
+    // Set a one hour time limit, this limits activity and means we don't have to do cleanup if anything fails
+    // Don't set keys if block_email = "Yes";
+    if (block_email == "No") {
+      // KV STORE KEY
+      KVkeyArray = request["email_address"].split("@");
+      KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
+      await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
+    }
+    // TODO: ENV VRIABLES FROM/REPLYTO
+    email_data = {};
+    email_data["domain"] = "webfinger.io";
+    email_data["to_email"] = request["email_address"];
+    email_data["from"] = "noreply@webfinger.io";
+    email_data["from_name"] = "webfinger.io Email Verification Service";
+    email_data["reply-to"] = "admin@webfinger.io";
+    email_data["reply-to_name"] = "webfinger.io Email Verification Admin";
+    // TODO: change subject to include random value (click link?) so gmail doesn't thread them
+    
+    email_data["subject"] = "webfinger.io Email verification";
+    // These env variables need to be set in wrangler.toml
+    // See docs.webfinger.io/DKIM-setup.md for setup details
+    email_data["DKIM_DOMAIN"] = DKIM_DOMAIN;
+    email_data["DKIM_SELECTOR"] = DKIM_SELECTOR;
+    email_data["DKIM_PRIVATE_KEY"] = DKIM_PRIVATE_KEY;
 
-  user_data["mastodon_id"] = request["mastodon_id"];
+    user_data = {};
+    // We always have a uuid and email
+    user_data["token"] = uuid_value;
+    // TODO: check if it fails here.
+    user_data["email_address"] = request["email_address"];
 
-  // Send the email template as specified (1 of 3)
-  if (request["action"] == "link_mastodon_id") {
-    if (block_email == "No") {
-      email_content = getemailContentProcessing("link_mastodon_id", user_data);
-      email_return_code = await handleEmail(email_data, email_content); 
+    user_data["mastodon_id"] = request["mastodon_id"];
+
+    // Send the email template as specified (1 of 3)
+    if (request["action"] == "link_mastodon_id") {
+      if (block_email == "No") {
+        email_content = getemailContentProcessing("link_mastodon_id", user_data);
+        email_return_code = await handleEmail(email_data, email_content); 
+      }
+      return new Response(gethtmlContentProcessing("link_mastodon_id", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
-    return new Response(gethtmlContentProcessing("link_mastodon_id", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-  else if (request["action"] == "block_email") {
-    if (block_email == "No") {
-      email_content = getemailContentProcessing("block_email", user_data);      
-      email_return_code = await handleEmail(email_data, email_content); 
+    else if (request["action"] == "block_email") {
+      if (block_email == "No") {
+        email_content = getemailContentProcessing("block_email", user_data);      
+        email_return_code = await handleEmail(email_data, email_content); 
+      }
+      return new Response(gethtmlContentProcessing("block_email", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
-    return new Response(gethtmlContentProcessing("block_email", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-  else if (request["action"] == "delete_record") {
-    if (block_email == "No") {
-      email_content = getemailContentProcessing("delete_record", user_data);  
-      email_return_code = await handleEmail(email_data, email_content);
+    else if (request["action"] == "delete_record") {
+      if (block_email == "No") {
+        email_content = getemailContentProcessing("delete_record", user_data);  
+        email_return_code = await handleEmail(email_data, email_content);
+      }
+      return new Response(gethtmlContentProcessing("delete_record", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    } 
+    else {
+      return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
-    return new Response(gethtmlContentProcessing("delete_record", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  } 
-  else {
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+/////////////////////////////////////////
   }
 }
 

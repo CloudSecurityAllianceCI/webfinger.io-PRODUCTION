@@ -117,11 +117,16 @@ export function strictNormalizeWebData(requestdata) {
 
 	// check for action, explicitly 1 of 2 values, assume linking if not
 	if (requestdata["action"]) {
-		if (requestdata["action"] == "block_email") {
-			normalized_data["action"] = "block_email";
-		}
-		else if (requestdata["action"] == "delete_record") {
-			normalized_data["action"] = "delete_record";
+		if (requestdata["action"] != "") {
+			if (requestdata["action"] == "block_email") {
+				normalized_data["action"] = "block_email";
+			}
+			else if (requestdata["action"] == "delete_record") {
+				normalized_data["action"] = "delete_record";
+			}
+			else {
+				normalized_data["action"] = "link_mastodon_id";
+			}
 		}
 		else {
 			normalized_data["action"] = "link_mastodon_id";
@@ -131,9 +136,15 @@ export function strictNormalizeWebData(requestdata) {
 		normalized_data["action"] = "link_mastodon_id";
 	}
 
+
 	// check for email, set to false if not present, normalize, which sets ot false if it is mangled
 	if (requestdata["email_address"]) {
-		normalized_data["email_address"] = strictNormalizeEmailAddress(requestdata["email_address"]);
+		if (requestdata["email_address"] != "") {
+			normalized_data["email_address"] = strictNormalizeEmailAddress(requestdata["email_address"]);
+		}
+		else {
+			normalized_data["email_address"] = false;
+		}
 	}
 	else {
 		normalized_data["email_address"] = false;
@@ -141,33 +152,49 @@ export function strictNormalizeWebData(requestdata) {
 
 	// check for GitHub ID, set to false if not present, normalize, which sets ot false if it is mangled
 	if (requestdata["github_id"]) {
-		normalized_data["github_id"] = strictNormalizeGitHub(requestdata["github_id"]);
+		if (requestdata["github_id"] != "") {
+			normalized_data["github_id"] = strictNormalizeGitHub(requestdata["github_id"]);
+		}
+		else {
+			normalized_data["github_id"] = false;
+		}
 	}
 	else {
 		normalized_data["github_id"] = false;
 	}
-	
 
+	// check for a mastodon id, nor always needed (e.g. delete records)
 	if (requestdata["mastodon_id"]) {
-		mastodon_id_normalized = strictNormalizeMastodon(requestdata["mastodon_id"]);
-		if (mastodon_id_normalized === false) {
-			normalized_data["mastodon_id"] = false;
+		if (requestdata["mastodon_id"] != "") {
+			mastodon_id_normalized = strictNormalizeMastodon(requestdata["mastodon_id"]);
+			if (mastodon_id_normalized === false) {
+				normalized_data["mastodon_id"] = false;
+			}
+			else {
+				normalized_data["mastodon_id"] = mastodon_id_normalized;
+			}
 		}
 		else {
-			normalized_data["mastodon_id"] = mastodon_id_normalized;
+			normalized_data["mastodon_id"] = false;
 		}
-	}
+	} 
 	else {
 		normalized_data["mastodon_id"] = false;
 	}
 	
-
 	// check for token
 	if (requestdata["token"]) {
-		normalized_data["token"] = strictNormalizeUUID(requestdata["token"]);
+		if (requestdata["token"] != "") {
+			normalized_data["token"] = strictNormalizeUUID(requestdata["token"]);
+		}
+		else {
+			normalized_data["token"] = false;
+		}
 	}
 	else {
 		normalized_data["token"] = false;
 	}
+
+	// Return nice clean normalized data, everything exists
 	return normalized_data;
 }

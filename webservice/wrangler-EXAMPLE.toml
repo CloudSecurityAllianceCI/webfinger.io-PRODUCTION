@@ -21,3 +21,5 @@ DKIM_DOMAIN = "main domain"
 DKIM_SELECTOR = "selector name"
 DKIM_PRIVATE_KEY = "private txt key"
 
+API_URL_VERIFICATION = "URL to validator api"
+API_TOKEN_VERIFICATION = "api key"

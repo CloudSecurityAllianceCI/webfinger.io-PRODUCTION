@@ -94,9 +94,11 @@ htmlContent["registration"] = `
     <input type="radio" id="block_email" name="action" value="block_email">
     <label for="block_email" class="label-inline">Unsubscribe and block all future email</label><br>
     
+    <!--
     <input type="radio" id="delete_record" name="action" value="delete_record">
     <label for="delete_record" class="label-inline">Delete the record for my email address</label><br>
-
+    -->
+    
     <input type="radio" id="link_mastodon_id" name="action" value="link_mastodon_id" checked="checked">
     <label for="link_mastodon_id" class="label-inline">Link to my Mastodon ID</label><br>
 

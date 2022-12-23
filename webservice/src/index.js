@@ -44,7 +44,7 @@ import { handleEmail } from "./emailHandler.js"
 // wget --post-data "email_address=test@seifried.org&action=link_mastodon_id&mastodon_id=@iuhku@iuhjkh.com&token=a43fd80f-a924-4c9c-bb53-dad1e6432de7" https://webfinger.io/
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 async function readPOSTRequestBody(request) {
-  
+
   const { headers } = request;
   const contentType = headers.get('content-type') || '';
   // We're doing POST to get form results
@@ -73,14 +73,26 @@ async function readPOSTRequestBody(request) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 async function readGETRequestParams(searchParams) {
   paramData = {};
+  if (searchParams.get("mastodon_id")) {
+    paramData["mastodon_id"] = searchParams.get("mastodon_id")
+  }
   if (searchParams.get("action")) {
     paramData["action"] = searchParams.get("action")
   }
   if (searchParams.get("email_address")) {
     paramData["email_address"] = searchParams.get("email_address")
   }
-  if (searchParams.get("mastodon_id")) {
-    paramData["mastodon_id"] = searchParams.get("mastodon_id")
+  if (searchParams.get("github_id")) {
+    paramData["github_id"] = searchParams.get("github_id")
+  }
+  if (searchParams.get("linkedin_id")) {
+    paramData["linkedin_id"] = searchParams.get("linkedin_id")
+  }
+  if (searchParams.get("reddit_id")) {
+    paramData["reddit_id"] = searchParams.get("reddit_id")
+  }
+  if (searchParams.get("twitter_id")) {
+    paramData["twitter_id"] = searchParams.get("twitter_id")
   }
   if (searchParams.get("token")) {
     paramData["token"] = searchParams.get("token")
@@ -92,7 +104,7 @@ async function readGETRequestParams(searchParams) {
 }
 
 
-async function readProcessingRequestBody(request) {
+async function readProcessingRequestBodyPOST(request) {
   // TODO: UPDATE LOGIC
 
   // if unsubscribe or delete requires email address
@@ -120,19 +132,47 @@ async function readProcessingRequestBody(request) {
 
   KVauthdataJSONString = JSON.stringify(KVauthdata);
 
+  // Handle github, logic goes inside each one
+  if (request["github_id"] != false) {
 
-  // return new Response("EMAIL ADDRESS: " + request["email_address"], {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    // check to see if we already have an auth key, they auto expire, this cuts down on abuse
+    KVkeyValue = "github:" + request["github_id"];
+    const KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
+    // if we find an auth record that means we have a unique key already set (which expires after one hour) so 
+    // no post request and continue so we don't leak info
+    if (KVauthresult) {
+      // This means we'll bail early and not do email either, no matter what if there's an error we just bail
+      return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
+    else {
+      // do the POST request to the verification API
 
-  // TODO: break into chunks and respond in blocks and than parse it all up
+      // KVauthdataJSONString was set earlier
+      // KVkeyValue was set earlier
+      await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
 
-  //////////////////////////////////////////////////////////////
-  // Check if an email was specified and then check if we email it or not
 
-  // Check if email is blocked, this simplifies the logic later on
+      verify_api_url = API_URL_VERIFICATION;
+
+      verify_api_post = {};
+      verify_api_post["API_TOKEN_VERIFICATION"] = API_TOKEN_VERIFICATION;
+      verify_api_post["ACCOUNT_TYPE"] = "github";
+      verify_api_post["ACCOUNT_NAME"] = request["github_id"];
+      verify_api_post["MASTODON_ID"] = request["mastodon_id"];
+      verify_api_post["CALLBACK_URL"] = "https://webfinger.io/confirmation";
+      verify_api_post["CALLBACK_TOKEN"] = uuid_value;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Handle email, logic goes inside each one
   if (request["email_address"] != false) {
 
+    // Check for block email, assume no
     block_email = "No";
     
+    // Check for record that contains block_email = Yes
+    KVkeyArray = {};
     KVkeyArray = request["email_address"].split("@");
     KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
     const KVDataResult = await webfingerio_prod_data.get(KVkeyValue);
@@ -145,11 +185,10 @@ async function readProcessingRequestBody(request) {
       }
     }
 
-    // KV STORE KEY
-    KVkeyArray = request["email_address"].split("@");
-    KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
-    const KVauthresult = await webfingerio_prod_auth.get(KVkeyArray);
-
+    // check to see if we already have an auth key, they auto expire, this cuts down on abuse
+//    KVkeyArray = request["email_address"].split("@");
+//    KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
+    const KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
     // if we find an auth record that means we have a unique key already set (which expires after one hour) so set to no email
     // and continue so we don't leak info
     if (KVauthresult) {
@@ -157,14 +196,19 @@ async function readProcessingRequestBody(request) {
       return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
     
+    // Set an auth key if one doesn't exist
     // Set a one hour time limit, this limits activity and means we don't have to do cleanup if anything fails
     // Don't set keys if block_email = "Yes";
     if (block_email == "No") {
       // KV STORE KEY
-      KVkeyArray = request["email_address"].split("@");
-      KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
+   //   KVkeyArray = request["email_address"].split("@");
+   //   KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
       await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
     }
+    else {
+      return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
+
     // TODO: ENV VRIABLES FROM/REPLYTO
     email_data = {};
     email_data["domain"] = "webfinger.io";
@@ -231,7 +275,7 @@ async function handlePOSTRequest(requestData) {
   requestURL = new URL(requestData.url);
   if (requestURL.pathname === "/apiv1/processing") {
     normalizedData = await readPOSTRequestBody(requestData);
-    replyBody = await readProcessingRequestBody(normalizedData);
+    replyBody = await readProcessingRequestBodyPOST(normalizedData);
     return replyBody;
 	} 
   else if (requestURL.pathname === "/apiv1/confirmation") {

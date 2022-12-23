@@ -25,6 +25,14 @@ export async function readConfirmationRequestBodyPOST(requestData) {
 	// This is called via POST from confirmation echo variables which is email only, or from the API verification
 	// which is one type of social ID per call only, so no need to batch up replies and data yet
 
+	// action
+	// token
+	// mastodon_id
+	// github_id
+
+	// TESTING
+	// wget --post-data "action=link_mastodon_id&mastodon_id=@kurtseifried@mastodon.social&github_id=kurtseifried&token=c1d94e2c-3909-4cd5-8777-49bd4bdeace7" https://webfinger.io/apiv1/confirmation
+	
 	if (requestData["action"] === false) {
 		return new Response("ERROR: no action", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
 	}

@@ -112,7 +112,7 @@ export function strictNormalizeWebData(requestdata) {
 	// we must have an action and an email_address
 	// if action === link_mastodon_id we must have a mastodon_id
 	// we should have a token but if not, setting it to "" is fine because we'll never find it
-	
+
 	let normalized_data = {};
 
 	// check for action, explicitly 1 of 2 values, assume linking if not

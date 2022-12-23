@@ -132,6 +132,7 @@ async function readProcessingRequestBodyPOST(request) {
 
   KVauthdataJSONString = JSON.stringify(KVauthdata);
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   // Handle github, logic goes inside each one
   if (request["github_id"] != false) {
 
@@ -151,9 +152,7 @@ async function readProcessingRequestBodyPOST(request) {
       // KVkeyValue was set earlier
       await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
 
-
       verify_api_url = API_URL_VERIFICATION;
-
       verify_api_post = {};
       verify_api_post["API_TOKEN_VERIFICATION"] = API_TOKEN_VERIFICATION;
       verify_api_post["ACCOUNT_TYPE"] = "github";
@@ -161,10 +160,15 @@ async function readProcessingRequestBodyPOST(request) {
       verify_api_post["MASTODON_ID"] = request["mastodon_id"];
       verify_api_post["CALLBACK_URL"] = "https://webfinger.io/confirmation";
       verify_api_post["CALLBACK_TOKEN"] = uuid_value;
+
+      api_return_code = await handleVerification(verify_api_url, verify_api_post); 
+      // DEBUG:
+      return new Response(api_return_code, {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
+
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   // Handle email, logic goes inside each one
   if (request["email_address"] != false) {
 

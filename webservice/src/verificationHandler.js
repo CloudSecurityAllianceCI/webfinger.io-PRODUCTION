@@ -1,4 +1,4 @@
-export async function handleVerification(data, email_content_data) {
+export async function handleVerification(verification_url, verification_data) {
     ///////////////////////
     //
     // https://api.mailchannels.net/tx/v1/documentation
@@ -8,53 +8,26 @@ export async function handleVerification(data, email_content_data) {
     //
     ///////////////////////
   
-    let send_request = new Request("https://api.mailchannels.net/tx/v1/send", {
+    let send_request = new Request(verification_url, {
         "method": "POST",
         "headers": {
             "content-type": "application/json",
         },
-        "body": JSON.stringify({
-            "personalizations": [
-                { "to": 
-                [ 
-                    { 
-                        "email": data["to_email"]
-                    }
-                ],
-                "dkim_domain": data["DKIM_DOMAIN"],
-                "dkim_selector": data["DKIM_SELECTOR"],
-                "dkim_private_key": data["DKIM_PRIVATE_KEY"]
-                }
-            ],
-            "from": {
-                "email": data["from"],
-                "name": data["from_name"],
-            },
-            "reply_to": {
-                "email": data["reply-to"],
-                "name": data["reply-to_name"],
-            },
-            "subject": data["subject"],
-            "content": [
-                {
-                    "type": email_content_data["type"],
-                    "value": email_content_data["content"],
-                }
-            ],
-        }),
+        "body": JSON.stringify(verification_data),
     });
-
   
     let respContent = "";
+
+    // The Verification API should reply with an "I got the message" and then close the connection and keep processing it, it then
+    // makes a POST request to confirmation
+    // Long term we should put this into a work queue, and send a web hook to trigger processing, so same pattern really,
+    // but if the verificaiton API fails, the queue still contains the work
+    //
     const resp = await fetch(send_request);
     const respText = await resp.text();
   
-    respContent = resp.status + " " + resp.statusText + "\n\n" + respText;
+    respContent = resp.status + " " + respText;
 
-    response_data = {};
-    response_data["data"] = data;
-    response_data["email_content_data"] = email_content_data;
-    response_data["resp"] = resp;
-    return response_data;
+    return respContent;
 }
 

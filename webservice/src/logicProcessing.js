@@ -57,10 +57,10 @@ export async function readProcessingRequestBodyPOST(request) {
   }
 
   // Return error for now, we need to chunk this up
-  if (github_id_state === false) {
+  if (github_id_state == "failure") {
     return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
-  else if (email_id_state === false) {
+  else if (email_id_state == "failure") {
     return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
   /// This should be the response for now
@@ -68,6 +68,8 @@ export async function readProcessingRequestBodyPOST(request) {
     return email_id_state;
   }
 }
+
+
 
 export async function readProcessingRequestBodyPOSTgithub(request) {
   // check to see if we already have an auth key, they auto expire, this cuts down on abuse

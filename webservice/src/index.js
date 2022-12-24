@@ -56,13 +56,16 @@ async function readPOSTRequestBody(request) {
   if (contentType.includes('form')) {
     const formData = await request.formData();
     // Get the body and populate the fields
-    postData = {};
+    let postData = {};
     for (const entry of formData.entries()) {
       // TODO: toLowercase this all
       postData[entry[0]] = entry[1];
     }
 
-    normalizedRequestData = strictNormalizeWebData(postData);
+    let normalizedRequestData = strictNormalizeWebData(postData);
+    // ALSO INCLUDE ORIGINAL DATA
+    normalizedRequestData["ORIGINAL_DATA"] = {};
+    normalizedRequestData["ORIGINAL_DATA"] = postData;
 
     return normalizedRequestData;
   }
@@ -77,7 +80,7 @@ async function readPOSTRequestBody(request) {
 // wget -v "https://webfinger.io/testing?email_address=test@seifried.org&action=link_mastodon_id&mastodon_id=iuhku@iuhjkh.com&token=a43fd80f-a924-4c9c-bb53-dad1e6432de7"
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 async function readGETRequestParams(searchParams) {
-  paramData = {};
+  let paramData = {};
   if (searchParams.get("mastodon_id")) {
     paramData["mastodon_id"] = searchParams.get("mastodon_id")
   }
@@ -104,6 +107,9 @@ async function readGETRequestParams(searchParams) {
   }
   
   let normalizedRequestData = strictNormalizeWebData(paramData);
+  normalizedRequestData["ORIGINAL_DATA"] = {};
+  normalizedRequestData["ORIGINAL_DATA"] = postData;
+  // TODO: ALSO INCLUDE ORIGINAL DATA
   return normalizedRequestData;
 //  return new Response(JSON.stringify(normalizedRequestData), {status: "200", headers: {"content-type": "text/plain"}});
 }

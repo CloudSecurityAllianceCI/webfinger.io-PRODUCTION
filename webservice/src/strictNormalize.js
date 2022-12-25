@@ -12,7 +12,7 @@ export function strictNormalizeEmailAddress(email_address) {
 	// Check a regex https://stackoverflow.com/questions/4964691/super-simple-email-validation-with-javascript
 	// 2,6 for tld needs to be 2,18 for NORTHWESTERNMUTUAL and . TRAVELERSINSURANCE
 	if (email_address.match(/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,18})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i) === null) {
-		return false;
+		return "";
 	}
 	email_address_lowercase = email_address.toLowerCase();
 	emailArray = email_address_lowercase.split("@");
@@ -30,7 +30,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 		mastodon_id_raw = mastodon_id_value.replace(/^@/, "");
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
-			return false;
+			return "";
 		}
 		else {
 			return "@" + mastodon_id_normalized;
@@ -42,7 +42,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
-			return false;
+			return "";
 		}
 		else {
 			return "@" + mastodon_id_normalized;
@@ -54,7 +54,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
-			return false;
+			return "";
 		}
 		else {
 			return "@" + mastodon_id_normalized;
@@ -66,7 +66,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
-			return false;
+			return "";
 		}
 		else {
 			return "@" + mastodon_id_normalized;
@@ -79,7 +79,7 @@ export function strictNormalizeGitHub(github_id_value) {
 	if (re_github_id.test(github_id_value)) {
 		return(github_id_value);
 	} else {
-		return false;
+		return "";
 	}
 }
 
@@ -88,7 +88,7 @@ export function strictNormalizeUUID(uuid_value) {
 	if (re_uuid.test(uuid_value)) {
 		return(uuid_value);
 	} else {
-		return false;
+		return "";
 	}
 }
 
@@ -101,17 +101,20 @@ export function basicEscapeHTML(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-
-// filename: ./src/strictNormalize.js
 export function strictNormalizeWebData(requestdata) {
-	// returns a normalized data structre or false if things are wrong/missing
-	// LOGIC:
-	// if block_email or delete_record
-	// we MUST have an email
-
-	// we must have an action and an email_address
-	// if action === link_mastodon_id we must have a mastodon_id
-	// we should have a token but if not, setting it to "" is fine because we'll never find it
+	//
+	// Basic Logic based on action (implemented in functions):
+	// link_mastodon_id: must have mastodon_id, and at leats one email/social_id
+	// unsubscribe: must have an email
+	// LATER: delete_record: must have email, longer term OR social_id AND token
+	// no action present: error out
+	// email present but no token present: error out
+	// 
+	// Basic values are either:
+	// 1) Missing entirely - set to false, "not present, don't parse"
+	// 2) Wrongly formatted (e.g. "" or "blah" for an email) - set to "", processing and confirmation should throw a helpful error
+	// 3) Correctly formatted - leave as is and try to use it
+	// Special note: link_mastodon_id is the default action, e.g. for front page, API, etc.
 
 	let normalized_data = {};
 
@@ -136,60 +139,33 @@ export function strictNormalizeWebData(requestdata) {
 		normalized_data["action"] = "link_mastodon_id";
 	}
 
+	if (requestdata["mastodon_id"]) {
+		// returns null or normalized mastodon_id
+		normalized_data["mastodon_id"] = strictNormalizeMastodon(requestdata["mastodon_id"]);
+	}
+	else {
+		normalized_data["mastodon_id"] = false;
+	}
 
-	// check for email, set to false if not present, normalize, which sets ot false if it is mangled
 	if (requestdata["email_address"]) {
-		if (requestdata["email_address"] != "") {
-			normalized_data["email_address"] = strictNormalizeEmailAddress(requestdata["email_address"]);
-		}
-		else {
-			normalized_data["email_address"] = false;
-		}
+		// returns null or normalized email
+		normalized_data["email_address"] = strictNormalizeEmailAddress(requestdata["email_address"]);
 	}
 	else {
 		normalized_data["email_address"] = false;
 	}
 
-	// check for GitHub ID, set to false if not present, normalize, which sets ot false if it is mangled
 	if (requestdata["github_id"]) {
-		if (requestdata["github_id"] != "") {
-			normalized_data["github_id"] = strictNormalizeGitHub(requestdata["github_id"]);
-		}
-		else {
-			normalized_data["github_id"] = false;
-		}
+		// returns null or normalized email
+		normalized_data["github_id"] = strictNormalizeEmailAddress(requestdata["email_address"]);
 	}
 	else {
 		normalized_data["github_id"] = false;
 	}
-
-	// check for a mastodon id, nor always needed (e.g. delete records)
-	if (requestdata["mastodon_id"]) {
-		if (requestdata["mastodon_id"] != "") {
-			mastodon_id_normalized = strictNormalizeMastodon(requestdata["mastodon_id"]);
-			if (mastodon_id_normalized === false) {
-				normalized_data["mastodon_id"] = false;
-			}
-			else {
-				normalized_data["mastodon_id"] = mastodon_id_normalized;
-			}
-		}
-		else {
-			normalized_data["mastodon_id"] = false;
-		}
-	} 
-	else {
-		normalized_data["mastodon_id"] = false;
-	}
 	
 	// check for token
 	if (requestdata["token"]) {
-		if (requestdata["token"] != "") {
-			normalized_data["token"] = strictNormalizeUUID(requestdata["token"]);
-		}
-		else {
-			normalized_data["token"] = false;
-		}
+		normalized_data["token"] = strictNormalizeUUID(requestdata["token"]);
 	}
 	else {
 		normalized_data["token"] = false;

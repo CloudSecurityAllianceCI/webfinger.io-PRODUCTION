@@ -82,33 +82,31 @@ async function readPOSTRequestBody(request) {
 async function readGETRequestParams(searchParams) {
   let paramData = {};
   if (searchParams.get("mastodon_id")) {
-    paramData["mastodon_id"] = searchParams.get("mastodon_id")
+    paramData["mastodon_id"] = searchParams.get("mastodon_id");
   }
   if (searchParams.get("action")) {
-    paramData["action"] = searchParams.get("action")
+    paramData["action"] = searchParams.get("action");
   }
   if (searchParams.get("email_address")) {
-    paramData["email_address"] = searchParams.get("email_address")
+    paramData["email_address"] = searchParams.get("email_address");
   }
   if (searchParams.get("github_id")) {
-    paramData["github_id"] = searchParams.get("github_id")
+    paramData["github_id"] = searchParams.get("github_id");
   }
   if (searchParams.get("linkedin_id")) {
-    paramData["linkedin_id"] = searchParams.get("linkedin_id")
+    paramData["linkedin_id"] = searchParams.get("linkedin_id");
   }
   if (searchParams.get("reddit_id")) {
-    paramData["reddit_id"] = searchParams.get("reddit_id")
+    paramData["reddit_id"] = searchParams.get("reddit_id");
   }
   if (searchParams.get("twitter_id")) {
-    paramData["twitter_id"] = searchParams.get("twitter_id")
+    paramData["twitter_id"] = searchParams.get("twitter_id");
   }
   if (searchParams.get("token")) {
-    paramData["token"] = searchParams.get("token")
+    paramData["token"] = searchParams.get("token");
   }
   
   let normalizedRequestData = strictNormalizeWebData(paramData);
-  normalizedRequestData["ORIGINAL_DATA"] = {};
-  normalizedRequestData["ORIGINAL_DATA"] = postData;
   // TODO: ALSO INCLUDE ORIGINAL DATA
   return normalizedRequestData;
 //  return new Response(JSON.stringify(normalizedRequestData), {status: "200", headers: {"content-type": "text/plain"}});
@@ -123,23 +121,18 @@ async function readGETRequestParams(searchParams) {
 // webfinger.io/apiv1/confirmation/*
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 async function handlePOSTRequest(requestData) {
-  requestURL = new URL(requestData.url);
+  let requestURL = new URL(requestData.url);
   if (requestURL.pathname === "/apiv1/processing") {
-    normalizedData = await readPOSTRequestBody(requestData);
-    replyBody = await readProcessingRequestBodyPOST(normalizedData);
+    let normalizedData = await readPOSTRequestBody(requestData);
+    let replyBody = await readProcessingRequestBodyPOST(normalizedData);
     return replyBody;
 	} 
   else if (requestURL.pathname === "/apiv1/confirmation") {
     // TODO: take confirmation GET request and to the work
     // 
-    normalizedData = await readPOSTRequestBody(requestData);
-    replyBody = await readConfirmationRequestBodyPOST(normalizedData);
+    let normalizedData = await readPOSTRequestBody(requestData);
+    let replyBody = await readConfirmationRequestBodyPOST(normalizedData);
     return replyBody;
-
-//		reqBody = await readPOSTRequestBody(requestData);
- //   replyBody = await jj(reqBody)
-  //  return new Response(JSON.stringify(reqBody), {status: "200", headers: {"content-type": "text/plain"}});
-//    return reqBody;
 	} 
 
   ///////////////////////////////////////
@@ -197,6 +190,7 @@ async function handleGETRequest(requestData) {
   else if (requestURL.pathname === "/apiv1/confirmation") {
     requestURL = new URL(requestData.url);
     const { searchParams } = new URL(requestData.url)
+    
     const reqBody = await readGETRequestParams(searchParams);
     replyBody = handleConfirmationGETRequest(reqBody);
     return replyBody;

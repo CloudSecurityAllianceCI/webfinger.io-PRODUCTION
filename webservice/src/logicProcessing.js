@@ -13,73 +13,61 @@ import { handleVerification } from "./verificationHandler.js"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export async function readProcessingRequestBodyPOST(request) {
-    // TODO: UPDATE LOGIC
-  
-    // if unsubscribe or delete requires email address
-  
-    // else if need mastodon ID and at least one of email/github/etc.
-  
-    // error handling first
-    if (request["action"] == "block_email" || request["action"] == "delete_record") {
-      if (request["email_address"] === false) {
-        return new Response("ERROR: We can't block email without an email address", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-      }
+
+  processing_results = {};
+
+  // error handling first, bail out
+  if (request["action"] == "block_email") {
+    if (request["email_address"] === false || request["email_address"] == "") {
+      processing_results["email_address"] = "ERROR:block_email:BAD_EMAIL_ADDRESS";
+      return processing_results;
+//      return new Response("ERROR: We can't block email without a validly formatted email address", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
-    else if (request["action"] == "link_mastodon_id") {
-      if (request["mastodon_id"] === false) {
-        return new Response("ERROR: We can't link something to a Mastodon ID without a Mastodon ID", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-      }
+  }
+
+  else if (request["action"] == "link_mastodon_id") {
+    if (request["mastodon_id"] === false || request["mastodon_id"] == "") {
+      processing_results["mastodon_id"] = "ERROR:link_mastodon_id:BAD_MASTODON_ID";
+      return processing_results;
+      //return new Response("ERROR: We can't link something to a Mastodon ID without a validly formatted Mastodon ID", {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
-  
-    // Generate a unique ID early on, we'll need it in a few places (each record type)
-    uuid_value = uuidv4();
-  
-    // The KV auth data is always the same, multiple records, e.g. email:, github:
-    KVauthdata = {};
-    KVauthdata["token"] = uuid_value;
-  
-    KVauthdataJSONString = JSON.stringify(KVauthdata);
-  
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    // Handle github, logic goes inside each one
-    github_id_state = false;
-  
-    if (request["github_id"] != false) {
-      github_id_state = await readProcessingRequestBodyPOSTgithub(request);
-    }
+    // Also check for at least one valid social_id
+  }
+
+  // Generate a unique ID early on, we'll need it in a few places (each record type)
+  uuid_value = uuidv4();
+
+  // The KV auth data is always the same, multiple records, e.g. email:, github:
+  KVauthdata = {};
+  KVauthdata["token"] = uuid_value;
+
+  KVauthdataJSONString = JSON.stringify(KVauthdata);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Handle github, logic goes inside each one
+
+  if (request["github_id"] != false) {
+    processing_results["github_id"] = await readProcessingRequestBodyPOSTgithub(request);
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Handle email, logic goes inside each one
-  email_id_state = false;
-
   if (request["email_address"] != false) {
-    email_id_state = await readProcessingRequestBodyPOSTemail(request);
+    processing_results["email_address"] = await readProcessingRequestBodyPOSTemail(request);
   }
 
-  // Return error for now, we need to chunk this up
-  if (github_id_state == "failure") {
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-  else if (email_id_state == "failure") {
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-  }
-  /// This should be the response for now
-  else {
-    return email_id_state;
-  }
+  return processing_results;
 }
-
-
 
 export async function readProcessingRequestBodyPOSTgithub(request) {
   // check to see if we already have an auth key, they auto expire, this cuts down on abuse
   KVkeyValue = "github:" + request["github_id"];
-  const KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
+  KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
   // if we find an auth record that means we have a unique key already set (which expires after one hour) so 
   // no post request and continue so we don't leak info
   if (KVauthresult) {
     // This means we'll hust ignore it and continue on
-    return false;
+    return "ERROR:AUTH_KEY_EXISTS";
     // return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
   else {
@@ -102,7 +90,7 @@ export async function readProcessingRequestBodyPOSTgithub(request) {
     // DEBUG:
     // no return here unbless it's done?
     // return new Response(api_return_code, {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
-    return "success";
+    return "SUCCESS:LINK_MASTODON_ID";
   }
 }
 
@@ -115,24 +103,25 @@ export async function readProcessingRequestBodyPOSTemail(request) {
   KVkeyArray = {};
   KVkeyArray = request["email_address"].split("@");
   KVkeyValue = "email:" + KVkeyArray[1] + ":" + KVkeyArray[0]
-  const KVDataResult = await webfingerio_prod_data.get(KVkeyValue);
+  KVDataResult = await webfingerio_prod_data.get(KVkeyValue);
   // remember if no record it returns null, so if it exists we have a record
   if (KVDataResult) {
     KVDataResultJSON = JSON.parse(KVDataResult);
     if (KVDataResultJSON["block_email"] == "Yes") {
       block_email = "Yes";
-      email_id_state = "failure";
-      return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+      return "ERROR:1:BAD_EMAIL_ADDRESS";
+      //return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
   }
 
   // check to see if we already have an auth key, they auto expire, this cuts down on abuse
-  const KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
+  KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
   // if we find an auth record that means we have a unique key already set (which expires after one hour) so set to no email
   // and continue so we don't leak info
   if (KVauthresult) {
     block_email = "Yes";
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "ERROR:2:BAD_EMAIL_ADDRESS";
+    //return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
   
   // Set an auth key if one doesn't exist
@@ -145,7 +134,8 @@ export async function readProcessingRequestBodyPOSTemail(request) {
     await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
   }
   else {
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "ERROR:3:BAD_EMAIL_ADDRESS";
+    //return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
 
   // TODO: ENV VRIABLES FROM/REPLYTO
@@ -179,23 +169,27 @@ export async function readProcessingRequestBodyPOSTemail(request) {
       email_content = getemailContentProcessing("link_mastodon_id", user_data);
       email_return_code = await handleEmail(email_data, email_content); 
     }
-    return new Response(gethtmlContentProcessing("link_mastodon_id", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "SUCCESS:LINK_MASTODON_ID";
+    //return new Response(gethtmlContentProcessing("link_mastodon_id", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
   else if (request["action"] == "block_email") {
     if (block_email == "No") {
       email_content = getemailContentProcessing("block_email", user_data);      
       email_return_code = await handleEmail(email_data, email_content); 
     }
-    return new Response(gethtmlContentProcessing("block_email", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "SUCCESS:BLOCK_EMAIL";
+    //return new Response(gethtmlContentProcessing("block_email", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
   else if (request["action"] == "delete_record") {
     if (block_email == "No") {
       email_content = getemailContentProcessing("delete_record", user_data);  
       email_return_code = await handleEmail(email_data, email_content);
     }
-    return new Response(gethtmlContentProcessing("delete_record", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "SUCCESS:DELETE_RECORD";
+    //return new Response(gethtmlContentProcessing("delete_record", user_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   } 
   else {
-    return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "ERROR:BAD_EMAIL_ADDRES";
+    //return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
   }
 }

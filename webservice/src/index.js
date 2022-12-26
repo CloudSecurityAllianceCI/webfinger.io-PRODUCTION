@@ -18,7 +18,7 @@ import { getsecuritytxt } from "./securitytxt.js";
 
 // normalize stuff
 import { strictNormalizeWebData } from "./strictNormalize.js";
-import { strictNormalizeEmailAddress } from "./strictNormalize.js";
+//import { strictNormalizeEmailAddress } from "./strictNormalize.js";
 
 // registration content
 import { gethtmlContentRegistration } from "./htmlContentRegistration.js";
@@ -27,8 +27,10 @@ import { gethtmlContentRegistration } from "./htmlContentRegistration.js";
 import { handleWebfingerGETRequest } from "./webfinger.js";
 
 // Processing content email/html
-import { gethtmlContentProcessing } from "./htmlContentProcessing.js"
-import { getemailContentProcessing } from "./emailContentProcessing.js"
+//import { gethtmlContentProcessing } from "./htmlContentProcessing.js"
+//import { getemailContentProcessing } from "./emailContentProcessing.js"
+
+import { gethtmlContentProcessingNew } from "./htmlContentProcessingnew.js"
 
 import { readProcessingRequestBodyPOST } from "./logicProcessing.js"
 
@@ -39,9 +41,9 @@ import { readConfirmationRequestBodyPOST } from "./logicConfirmation.js"
 import { handleVerifiedEmailGETRequest } from "./logicVerifiedEmailPage.js"
 
 // Processing email handler
-import { handleEmail } from "./emailHandler.js"
+//import { handleEmail } from "./emailHandler.js"
 
-import { handleVerification } from "./verificationHandler.js"
+//import { handleVerification } from "./verificationHandler.js"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Main POST body
@@ -49,7 +51,6 @@ import { handleVerification } from "./verificationHandler.js"
 // wget --post-data "email_address=test@seifried.org&action=link_mastodon_id&mastodon_id=@iuhku@iuhjkh.com&token=a43fd80f-a924-4c9c-bb53-dad1e6432de7" https://webfinger.io/
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 async function readPOSTRequestBody(request) {
-
   const { headers } = request;
   const contentType = headers.get('content-type') || '';
   // We're doing POST to get form results
@@ -61,12 +62,7 @@ async function readPOSTRequestBody(request) {
       // TODO: toLowercase this all
       postData[entry[0]] = entry[1];
     }
-
     let normalizedRequestData = strictNormalizeWebData(postData);
-    // ALSO INCLUDE ORIGINAL DATA
-    normalizedRequestData["ORIGINAL_DATA"] = {};
-    normalizedRequestData["ORIGINAL_DATA"] = postData;
-
     return normalizedRequestData;
   }
   else {
@@ -125,7 +121,11 @@ async function handlePOSTRequest(requestData) {
   if (requestURL.pathname === "/apiv1/processing") {
     let normalizedData = await readPOSTRequestBody(requestData);
     let replyBody = await readProcessingRequestBodyPOST(normalizedData);
-    return replyBody;
+
+
+    let webpage_reply = gethtmlContentProcessingNew(replyBody, normalizedData);
+    return new Response(webpage_reply, {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    
 	} 
   else if (requestURL.pathname === "/apiv1/confirmation") {
     // TODO: take confirmation GET request and to the work
@@ -190,7 +190,7 @@ async function handleGETRequest(requestData) {
   else if (requestURL.pathname === "/apiv1/confirmation") {
     requestURL = new URL(requestData.url);
     const { searchParams } = new URL(requestData.url)
-    
+
     const reqBody = await readGETRequestParams(searchParams);
     replyBody = handleConfirmationGETRequest(reqBody);
     return replyBody;

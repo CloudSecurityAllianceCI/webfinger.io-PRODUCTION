@@ -157,7 +157,7 @@ export function strictNormalizeWebData(requestdata) {
 
 	if (requestdata["github_id"]) {
 		// returns null or normalized email
-		normalized_data["github_id"] = strictNormalizeEmailAddress(requestdata["email_address"]);
+		normalized_data["github_id"] = strictNormalizeGitHub(requestdata["github_id"]);
 	}
 	else {
 		normalized_data["github_id"] = false;

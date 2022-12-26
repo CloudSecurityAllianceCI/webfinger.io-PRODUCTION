@@ -62,6 +62,7 @@ export function gethtmlContentProcessing(status, data) {
     </body>
     </html>
     `;
+
     html_content["delete_record"] = `
     <p>We have processed your request to delete the record for EMAIL_ADDRESS, you should check for 
     an email shortly, please check your spam folders if it doesn't show up. It will be valid 

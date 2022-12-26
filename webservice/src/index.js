@@ -30,7 +30,7 @@ import { handleWebfingerGETRequest } from "./webfinger.js";
 //import { gethtmlContentProcessing } from "./htmlContentProcessing.js"
 //import { getemailContentProcessing } from "./emailContentProcessing.js"
 
-import { gethtmlContentProcessingNew } from "./htmlContentProcessingnew.js"
+import { gethtmlContentProcessingNew } from "./htmlContentProcessingNew.js"
 
 import { readProcessingRequestBodyPOST } from "./logicProcessing.js"
 

@@ -84,6 +84,7 @@ export async function readProcessingRequestBodyPOSTgithub(request) {
     verify_api_post["ACCOUNT_NAME"] = request["github_id"];
     verify_api_post["MASTODON_ID"] = request["mastodon_id"];
     verify_api_post["CALLBACK_URL"] = "https://webfinger.io/confirmation";
+    verify_api_post["CALLBACK_ACTION"] = "link_mastodon_id";
     verify_api_post["CALLBACK_TOKEN"] = uuid_value;
 
     api_return_code = await handleVerification(verify_api_url, verify_api_post); 

@@ -38,7 +38,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     `;
 
     html_content["link_mastodon_id_social"] = `
-    <p>We have processed your request to link MASTODON_ID to SOCIAL_ID (click to ensure it works, you should see a success and a link to your GitHub profile). </p>
+    <p>We have processed your request to link MASTODON_ID to SOCIAL_ID (please wait about 10 seconds and then click to ensure it works, you should see a success and a link to your GitHub profile). </p>
     `;
 
     html_content["block_email"] = `
@@ -94,6 +94,17 @@ export function gethtmlContentProcessingNew(processing_results, data) {
         new_content = new_content.replace(/SOCIAL_ID/g, "<a href=\"https://webfinger.io/github/GITHUB_ID\">https://webfinger.io/github/GITHUB_ID</a>");
     }
 
+    // Reddit processing
+    if (processing_results["reddit_id"]){
+        if (processing_results["reddit_id"] == "SUCCESS:LINK_MASTODON_ID") {
+            new_content = new_content + html_content["link_mastodon_id_social"];
+        }
+        else if (processing_results["reddit_id"] == "SUCCESS:DELETE_RECORD") {
+            new_content = new_content + html_content["delete_record"];
+        }
+        new_content = new_content.replace(/SOCIAL_ID/g, "<a href=\"https://webfinger.io/u/REDDIT_ID\">https://webfinger.io/u/REDDIT_ID</a>");
+    }
+
     // Add footer
     new_content = new_content + html_content["footer"];
 
@@ -109,6 +120,9 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     } 
     if (data["github_id"]) {
         new_content = new_content.replace(/GITHUB_ID/g, data["github_id"]);
+    } 
+    if (data["reddit_id"]) {
+        new_content = new_content.replace(/REDDIT_ID/g, data["reddit_id"]);
     } 
     return new_content;
 

@@ -161,7 +161,7 @@ htmlContent["registration"] = `
     <label for="github_id">GitHub ID (verify by listing your Mastodon ID in your <a href="https://github.com/settings/profile">"Bio"</a>):</label>
     <input type="text" id="github_id" name="github_id" placeholder="github username">
 
-    <label for="reddit_id">Coming soon: Reddit ID (verify by listing your Mastodon ID in your <a href="https://www.reddit.com/settings/profile">"About"</a>):</label>
+    <label for="reddit_id">Reddit ID (verify by listing your Mastodon ID in your <a href="https://www.reddit.com/settings/profile">"About"</a>):</label>
     <input type="text" id="reddit_id" name="reddit_id" placeholder="reddit username">
 
     <label for="email_address">Email address (optional):</label>
@@ -197,7 +197,7 @@ htmlContent["registration"] = `
     <ul>
         <li>Email: https://webfinger.io/yourname@emaildomain</li>
         <li>GitHub: https://webfinger.io/github/yourname</li>
-        <li>Reddit: Coming soon: https://webfinger.io/u/yourname</li>
+        <li>Reddit: https://webfinger.io/u/yourname</li>
         <li>Twitter: Coming soon</li>
         <li>LinkedIN: Coming soon</li>
         </ul>

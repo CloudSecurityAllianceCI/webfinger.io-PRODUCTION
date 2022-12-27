@@ -82,6 +82,42 @@ export async function readConfirmationRequestBodyPOST(requestData) {
 		}
 	}
 
+	// If we have a reddit lets link it up
+	if (requestData["reddit_id"] != false) {
+		// KV STORE get auth key
+		KVkeyValue = "reddit:" + requestData["reddit_id"];
+		const KVauthResult = await webfingerio_prod_auth.get(KVkeyValue);
+
+		// null means no record means no key so throw an error now
+		if (KVauthResult === null) {
+			return new Response(gethtmlContentConfirmation("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+		}
+		
+		KVauthData = JSON.parse(KVauthResult);
+
+		// check that the unique token matches, if not throw an error
+		if (KVauthData["token"] == requestData["token"]) {
+			KVdata = {};
+
+			if (requestData["action"] == "link_mastodon_id") {
+				KVdata["mastodon_id"] = requestData["mastodon_id"];
+				KVdataJSONString = JSON.stringify(KVdata);
+				KVkeyValue = "reddit:" + requestData["reddit_id"];
+				
+				await webfingerio_prod_data.put(KVkeyValue, KVdataJSONString);
+				await webfingerio_prod_auth.delete(KVkeyValue);
+				return new Response(gethtmlContentConfirmation("link_mastodon_id", requestData), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+			}
+			else {
+				return new Response(gethtmlContentConfirmation("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+			}
+		}
+		// no matching token return generic error
+		else {
+			return new Response(gethtmlContentConfirmation("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+		}
+	}
+
 	// If we have an email address process it
 	if (requestData["email_address"] != false) {
 		// KV STORE get auth key

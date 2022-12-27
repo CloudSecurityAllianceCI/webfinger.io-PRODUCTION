@@ -47,7 +47,11 @@ export async function readProcessingRequestBodyPOST(request) {
   // Handle github, logic goes inside each one
 
   if (request["github_id"] != false) {
-    processing_results["github_id"] = await readProcessingRequestBodyPOSTgithub(request);
+    processing_results["github_id"] = await readProcessingRequestBodyPOSTGithub(request);
+  }
+
+  if (request["reddit_id"] != false) {
+    processing_results["reddit_id"] = await readProcessingRequestBodyPOSTReddit(request);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +63,7 @@ export async function readProcessingRequestBodyPOST(request) {
   return processing_results;
 }
 
-export async function readProcessingRequestBodyPOSTgithub(request) {
+export async function readProcessingRequestBodyPOSTGithub(request) {
   // check to see if we already have an auth key, they auto expire, this cuts down on abuse
   KVkeyValue = "github:" + request["github_id"];
   KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
@@ -94,6 +98,43 @@ export async function readProcessingRequestBodyPOSTgithub(request) {
     return "SUCCESS:LINK_MASTODON_ID";
   }
 }
+
+export async function readProcessingRequestBodyPOSTReddit(request) {
+  // check to see if we already have an auth key, they auto expire, this cuts down on abuse
+  KVkeyValue = "reddit:" + request["reddit_id"];
+  KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
+  // if we find an auth record that means we have a unique key already set (which expires after one hour) so 
+  // no post request and continue so we don't leak info
+  if (KVauthresult) {
+    // This means we'll hust ignore it and continue on
+    return "ERROR:AUTH_KEY_EXISTS";
+    // return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+  }
+  else {
+    // do the POST request to the verification API
+
+    // KVauthdataJSONString was set earlier
+    // KVkeyValue was set earlier
+    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
+
+    verify_api_url = API_URL_VERIFICATION;
+    verify_api_post = {};
+    verify_api_post["API_TOKEN_VERIFICATION"] = API_TOKEN_VERIFICATION;
+    verify_api_post["ACCOUNT_TYPE"] = "reddit";
+    verify_api_post["ACCOUNT_NAME"] = request["reddit_id"];
+    verify_api_post["MASTODON_ID"] = request["mastodon_id"];
+    verify_api_post["CALLBACK_URL"] = "https://webfinger.io/apiv1/confirmation";
+    verify_api_post["CALLBACK_ACTION"] = "link_mastodon_id";
+    verify_api_post["CALLBACK_TOKEN"] = uuid_value;
+
+    api_return_code = await handleVerification(verify_api_url, verify_api_post); 
+    // DEBUG:
+    // no return here unbless it's done?
+    // return new Response(api_return_code, {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "SUCCESS:LINK_MASTODON_ID";
+  }
+}
+
 
 export async function readProcessingRequestBodyPOSTemail(request) {
 

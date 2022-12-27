@@ -173,6 +173,14 @@ export function strictNormalizeWebData(requestdata) {
 	else {
 		normalized_data["github_id"] = false;
 	}
+
+	if (requestdata["reddit_id"]) {
+		// returns null or normalized email
+		normalized_data["reddit_id"] = strictNormalizeReddit(requestdata["reddit_id"]);
+	}
+	else {
+		normalized_data["reddit_id"] = false;
+	}
 	
 	// check for token
 	if (requestdata["token"]) {

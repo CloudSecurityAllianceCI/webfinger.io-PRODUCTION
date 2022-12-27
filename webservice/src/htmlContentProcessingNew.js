@@ -91,7 +91,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
         else if (processing_results["github_id"] == "SUCCESS:DELETE_RECORD") {
             new_content = new_content + html_content["delete_record"];
         }
-        new_content = new_content.replace(/SOCIAL_ID/g, "<a href=\"https://webfinger.io/github/GITHUB_ID\">https://webfinger.io/github/GITHUB_ID</a>");
+        new_content = new_content.replace(/SOCIAL_ID/g, "<a target=\"_blank\" href=\"https://webfinger.io/github/GITHUB_ID\">https://webfinger.io/github/GITHUB_ID</a>");
     }
 
     // Reddit processing
@@ -102,7 +102,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
         else if (processing_results["reddit_id"] == "SUCCESS:DELETE_RECORD") {
             new_content = new_content + html_content["delete_record"];
         }
-        new_content = new_content.replace(/SOCIAL_ID/g, "<a href=\"https://webfinger.io/u/REDDIT_ID\">https://webfinger.io/u/REDDIT_ID</a>");
+        new_content = new_content.replace(/SOCIAL_ID/g, "<a target=\"_blank\" href=\"https://webfinger.io/u/REDDIT_ID\">https://webfinger.io/u/REDDIT_ID</a>");
     }
 
     // Add footer

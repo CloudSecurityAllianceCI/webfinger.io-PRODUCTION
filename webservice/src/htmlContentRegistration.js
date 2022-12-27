@@ -158,13 +158,13 @@ htmlContent["registration"] = `
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
     
-    <label for="github_id">GitHub ID (verify by listing your Mastodon ID in your <a href="https://github.com/settings/profile">"Bio"</a>):</label>
+    <label for="github_id">GitHub ID (verify by listing your Mastodon ID in your <a target="_blank" href="https://github.com/settings/profile">"Bio"</a>):</label>
     <input type="text" id="github_id" name="github_id" placeholder="github username">
 
-    <label for="reddit_id">Reddit ID (verify by listing your Mastodon ID in your <a href="https://www.reddit.com/settings/profile">"About"</a>):</label>
+    <label for="reddit_id">Reddit ID (verify by listing your Mastodon ID in your <a target="_blank" href="https://www.reddit.com/settings/profile">"About"</a>):</label>
     <input type="text" id="reddit_id" name="reddit_id" placeholder="reddit username">
 
-    <label for="email_address">Email address (optional):</label>
+    <label for="email_address">Email address (verify by clicking a link we'll email you):</label>
     <input type="email" id="email_address" name="email_address" placeholder="username@example.org">
 
     <input type="submit" value="submit" name="submit">

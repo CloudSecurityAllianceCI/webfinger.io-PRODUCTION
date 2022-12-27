@@ -38,7 +38,8 @@ import { readProcessingRequestBodyPOST } from "./logicProcessing.js"
 import { handleConfirmationGETRequest } from "./logicConfirmation.js"
 import { readConfirmationRequestBodyPOST } from "./logicConfirmation.js"
 
-import { handleVerifiedEmailGETRequest } from "./logicVerifiedEmailPage.js"
+import { handleVerifiedEmailGETRequest } from "./logicVerifiedPage.js"
+import { handleVerifiedGitHubGETRequest } from "./logicVerifiedPage.js"
 
 // Processing email handler
 //import { handleEmail } from "./emailHandler.js"
@@ -195,10 +196,16 @@ async function handleGETRequest(requestData) {
     replyBody = handleConfirmationGETRequest(reqBody);
     return replyBody;
 	} 
+  // startsWith /github/ means GitHub
+  else if (requestURL.pathname.startsWith("/github/") || requestURL.pathname.startsWith("/GitHub/") || requestURL.pathname.startsWith("/Github/")) {
+    //return new Response("GitHub account", {status: "200", headers: {"content-type": "text/plain"}});
+    replyBody = await handleVerifiedGitHubGETRequest(requestURL.pathname);
+    return replyBody;
+	} 
   // startsWith @ means twitter
   else if (requestURL.pathname.startsWith("/@")) {
     return new Response("Twitter account", {status: "200", headers: {"content-type": "text/plain"}});
-    //replyBody = await handleVerifiedEmailGETRequest(requestURL.pathname);
+    //replyBody = await handleVerifiedGETRequest(requestURL.pathname);
     //return replyBody;
 	} 
   // an @ in it means it's an email

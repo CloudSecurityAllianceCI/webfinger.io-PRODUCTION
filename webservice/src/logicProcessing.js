@@ -87,13 +87,6 @@ export async function readProcessingRequestBodyPOSTgithub(request) {
     verify_api_post["CALLBACK_ACTION"] = "link_mastodon_id";
     verify_api_post["CALLBACK_TOKEN"] = uuid_value;
 
-
-    // $postdata["CALLBACK_ACTION"]
-    // $postdata["MASTODON_ID"] 
-    // $postdata["GITHUB_ID"]
-    // $postdata["CALLBACK_TOKEN"] 
-
-
     api_return_code = await handleVerification(verify_api_url, verify_api_post); 
     // DEBUG:
     // no return here unbless it's done?

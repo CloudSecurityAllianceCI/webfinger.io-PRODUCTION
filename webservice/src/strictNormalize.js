@@ -75,6 +75,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 }
 
 export function strictNormalizeGitHub(github_id_value) {
+	// TODO: we should lowercase this all?
 	var re_github_id = new RegExp("^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$");
 	if (re_github_id.test(github_id_value)) {
 		return(github_id_value);

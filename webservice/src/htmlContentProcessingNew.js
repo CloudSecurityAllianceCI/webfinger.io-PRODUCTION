@@ -38,7 +38,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     `;
 
     html_content["link_mastodon_id_social"] = `
-    <p>We have NOT processed your request to link MASTODON_ID to SOCIAL_ID as this isn't supported yet.</p>
+    <p>We have processed your request to link MASTODON_ID to SOCIAL_ID (click to ensure it works, you should see a JSON file). </p>
     `;
 
     html_content["block_email"] = `
@@ -91,7 +91,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
         else if (processing_results["github_id"] == "SUCCESS:DELETE_RECORD") {
             new_content = new_content + html_content["delete_record"];
         }
-        new_content = new_content.replace(/SOCIAL_ID/g, "GITHUB_ID");
+        new_content = new_content.replace(/SOCIAL_ID/g, "<a href=\"https://webfinger.io/github/GITHUB_ID\">https://webfinger.io/github/GITHUB_ID</a>");
     }
 
     // Add footer

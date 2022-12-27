@@ -52,10 +52,47 @@ export function gethtmlContentRegistration(status, data) {
 
     `;
 
+    htmlContent["verifiedgithub"] = `
+
+    <p><strong><a href="https://github.com/GITHUB_ID">GITHUB_ID</a> has been verified by webfinger.io and is linked to 
+    <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
+
+    <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+
+    `;
+
     // TODO: make this more obvious and serve correctly
     htmlContent["noverifiedemail"] = `<p>We could not verify EMAIL_ADDRESS</p>
     
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+    
+    `;
+
+    htmlContent["noverifiedgithub"] = `<p>We could not verify <a href="https://github.com/GITHUB_ID">GITHUB_ID</a>.</p>
+    
+    <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
     <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
@@ -197,6 +234,45 @@ htmlContent["registration"] = `
             return replyContent;
         }
     }
+
+    else if (status == "verifiedgithub") {
+        let new_content = "";
+        if (data["github_id"]) {
+            new_content = htmlContent["verifiedgithub"].replace(/GITHUB_ID/g, data["github_id"]);
+            htmlContent["verifiedgithub"] = new_content;
+        } 
+        else {
+            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
+            return replyContent; 
+        }
+        if (data["mastodon_id"]) {
+            new_content = htmlContent["verifiedgithub"].replace(/MASTODON_ID/g, data["mastodon_id"]);
+            htmlContent["verifiedgithub"] = new_content;
+        }
+        else {
+            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
+            return replyContent; 
+        }
+        if (data["mastodon_name"]) {
+            new_content = htmlContent["verifiedgithub"].replace(/MASTODON_NAME/g, data["mastodon_name"]);
+            htmlContent["verifiedgithub"] = new_content;
+        }
+        else {
+            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
+            return replyContent; 
+        }
+        if (data["mastodon_domain"]) {
+            new_content = htmlContent["verifiedgithub"].replace(/MASTODON_DOMAIN/g, data["mastodon_domain"]);
+            htmlContent["verifiedgithub"] = new_content;
+            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
+            return replyContent;
+        } 
+        else {
+            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
+            return replyContent;
+        }
+    }
+
     
     else if (status == "noverifiedemail") {
         // We always have an email address, hopefully
@@ -206,6 +282,16 @@ htmlContent["registration"] = `
 
         return replyContent
     }
+
+    else if (status == "noverifiedgithub") {
+        // We always have an email address, hopefully
+        new_content = htmlContent["noverifiedgithub"].replace(/GITHUB_ID/g, data["github_id"]);
+        htmlContent["noverifiedgithub"] = new_content;
+        replyContent = htmlContent["header"] + htmlContent["noverifiedgithub"];
+
+        return replyContent
+    }
+
     else {
         return false;
     }

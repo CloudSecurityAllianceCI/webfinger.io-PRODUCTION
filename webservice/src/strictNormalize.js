@@ -84,6 +84,16 @@ export function strictNormalizeGitHub(github_id_value) {
 	}
 }
 
+export function strictNormalizeReddit(github_id_value) {
+	// TODO: we should lowercase this all?
+	var re_github_id = new RegExp("^[a-zA-Z0-9-_]{3,20}$");
+	if (re_github_id.test(github_id_value)) {
+		return(github_id_value);
+	} else {
+		return "";
+	}
+}
+
 export function strictNormalizeUUID(uuid_value) {
 	var re_uuid = new RegExp("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$");
 	if (re_uuid.test(uuid_value)) {

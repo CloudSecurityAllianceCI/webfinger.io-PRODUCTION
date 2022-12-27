@@ -40,6 +40,7 @@ import { readConfirmationRequestBodyPOST } from "./logicConfirmation.js"
 
 import { handleVerifiedEmailGETRequest } from "./logicVerifiedPage.js"
 import { handleVerifiedGitHubGETRequest } from "./logicVerifiedPage.js"
+import { handleVerifiedRedditGETRequest } from "./logicVerifiedPage.js"
 
 // Processing email handler
 //import { handleEmail } from "./emailHandler.js"
@@ -202,6 +203,11 @@ async function handleGETRequest(requestData) {
     replyBody = await handleVerifiedGitHubGETRequest(requestURL.pathname);
     return replyBody;
 	} 
+  // startsWith /u/ means Reddit
+  else if (requestURL.pathname.startsWith("/u/") || requestURL.pathname.startsWith("/reddit/") ) {
+    replyBody = await handleVerifiedRedditGETRequest(requestURL.pathname);
+    return replyBody;
+  } 
   // startsWith @ means twitter
   else if (requestURL.pathname.startsWith("/@")) {
     return new Response("Twitter account", {status: "200", headers: {"content-type": "text/plain"}});

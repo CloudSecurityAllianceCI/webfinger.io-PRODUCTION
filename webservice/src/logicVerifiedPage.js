@@ -1,7 +1,7 @@
 
 import { gethtmlContentRegistration } from "./htmlContentRegistration.js"
 
-import { strictNormalizeEmailAddress, strictNormalizeGitHub, strictNormalizeMastodon } from "./strictNormalize.js";
+import { strictNormalizeEmailAddress, strictNormalizeGitHub, strictNormalizeMastodon, strictNormalizeReddit} from "./strictNormalize.js";
 
 
 import { basicEscapeHTML } from "./strictNormalize.js";
@@ -74,7 +74,7 @@ export async function handleVerifiedGitHubGETRequest(requestData) {
 
     if (normalized_github_id === false) {
         // todo change to "" handler
-        return new Response(gethtmlContentRegistration("noverifiedemail", error_result), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+        return new Response(gethtmlContentRegistration("noverifiedgithub", error_result), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
     }
 
 	// KV STORE get auth key
@@ -110,4 +110,51 @@ export async function handleVerifiedGitHubGETRequest(requestData) {
     }
 }
 
+export async function handleVerifiedRedditGETRequest(requestData) {
+    // reddit
 
+    raw_request = requestURL.pathname.slice(1);
+
+    reddit_id_array = raw_request.split("/");
+
+    normalized_reddit_id = strictNormalizeReddit(reddit_id_array[1]);
+
+    error_result = {};
+
+    error_result["reddit_id"] = encodeURIComponent(normalized_reddit_id);
+    // basicEscapeHTML escape @ and some other stuff we want
+
+    if (normalized_reddit_id === false) {
+        // todo change to "" handler
+        return new Response(gethtmlContentRegistration("noverifiedreddit", error_result), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
+
+    KVkeyValue = "reddit:" + normalized_reddit_id;
+    const KVdataResult = await webfingerio_prod_data.get(KVkeyValue);
+    
+    // null means no record means no key so throw an error now
+    if (KVdataResult === null) {
+        return new Response(gethtmlContentRegistration("noverifiedreddit", error_result), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    }
+    else {
+        KVdataReply = JSON.parse(KVdataResult);
+    }
+
+    if (KVdataReply["mastodon_id"]) {
+        mastodon_id_raw = KVdataReply["mastodon_id"];
+        mastodon_id_normalized = strictNormalizeMastodon(mastodon_id_raw);
+        if (mastodon_id_normalized === false) {
+            return new Response(gethtmlContentRegistration("noverifiedreddit", error_result), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+        }
+        else {
+            mastodon_id_split = mastodon_id_normalized.split("@");
+
+            let substitute_data = {};
+            substitute_data["reddit_id"] = normalized_reddit_id;
+            substitute_data["mastodon_id"] = mastodon_id_normalized;
+            substitute_data["mastodon_name"] = mastodon_id_split[1];
+            substitute_data["mastodon_domain"] = mastodon_id_split[2];
+            return new Response(gethtmlContentRegistration("verifiedreddit", substitute_data), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+        }
+    }
+}

@@ -54,7 +54,7 @@ export function gethtmlContentRegistration(status, data) {
 
     htmlContent["verifiedgithub"] = `
 
-    <p><strong><a href="https://github.com/GITHUB_ID">GITHUB_ID</a> has been verified by webfinger.io and is linked to 
+    <p><strong>The GitHub user <a href="https://github.com/GITHUB_ID">GITHUB_ID</a> has been verified by webfinger.io and is linked to 
     <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
@@ -71,6 +71,27 @@ export function gethtmlContentRegistration(status, data) {
     </html>
 
     `;
+
+    htmlContent["verifiedreddit"] = `
+
+    <p><strong>The Reddit user <a href="https://reddit.com/user/REDDIT_ID">REDDIT_ID</a> has been verified by webfinger.io and is linked to 
+    <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
+
+    <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+
+    `;
+
 
     // TODO: make this more obvious and serve correctly
     htmlContent["noverifiedemail"] = `<p>We could not verify EMAIL_ADDRESS</p>
@@ -90,7 +111,26 @@ export function gethtmlContentRegistration(status, data) {
     
     `;
 
+    
+
     htmlContent["noverifiedgithub"] = `<p>We could not verify <a href="https://github.com/GITHUB_ID">GITHUB_ID</a>.</p>
+    
+    <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+    
+    `;
+
+    htmlContent["noverifiedreddit"] = `<p>We could not verify <a href="https://reddit.com/u/REDDIT_ID">REDDIT_ID</a>.</p>
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
@@ -118,8 +158,11 @@ htmlContent["registration"] = `
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
     
-    <label for="github_id">GitHub ID (optional, but you must list your Mastodon ID in you <a href="https://github.com/settings/profile">Bio</a>):</label>
-    <input type="text" id="github_id" name="github_id" placeholder="github username or org name">
+    <label for="github_id">GitHub ID (verify by listing your Mastodon ID in your <a href="https://github.com/settings/profile">"Bio"</a>):</label>
+    <input type="text" id="github_id" name="github_id" placeholder="github username">
+
+    <label for="reddit_id">Coming soon: Reddit ID (verify by listing your Mastodon ID in your <a href="https://www.reddit.com/settings/profile">"About"</a>):</label>
+    <input type="text" id="reddit_id" name="reddit_id" placeholder="reddit username">
 
     <label for="email_address">Email address (optional):</label>
     <input type="email" id="email_address" name="email_address" placeholder="username@example.org">
@@ -150,7 +193,14 @@ htmlContent["registration"] = `
     <ul>
     <li>Search field: @yourname_emaildomain@webfinger.io</li>
     <li>If you redirect your webfinger to us: @yourname@emaildomain</li>
-    <li>Mastodon profile metadata verification: simply add a link like https://webfinger.io/yourname@emaildomain</li>
+    <li>Mastodon profile metadata verification: simply add a link
+    <ul>
+        <li>Email: https://webfinger.io/yourname@emaildomain</li>
+        <li>GitHub: https://webfinger.io/github/yourname</li>
+        <li>Reddit: Coming soon: https://webfinger.io/u/yourname</li>
+        <li>Twitter: Coming soon</li>
+        <li>LinkedIN: Coming soon</li>
+        </ul>
     </ul>
 
     <p>To let people search for your email, simply redirect https://youremaildomain/.well-known/webfinger to https://webfinger.io/.well-known/webfinger and it'll work.</p>
@@ -241,25 +291,13 @@ htmlContent["registration"] = `
             new_content = htmlContent["verifiedgithub"].replace(/GITHUB_ID/g, data["github_id"]);
             htmlContent["verifiedgithub"] = new_content;
         } 
-        else {
-            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
-            return replyContent; 
-        }
         if (data["mastodon_id"]) {
             new_content = htmlContent["verifiedgithub"].replace(/MASTODON_ID/g, data["mastodon_id"]);
             htmlContent["verifiedgithub"] = new_content;
         }
-        else {
-            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
-            return replyContent; 
-        }
         if (data["mastodon_name"]) {
             new_content = htmlContent["verifiedgithub"].replace(/MASTODON_NAME/g, data["mastodon_name"]);
             htmlContent["verifiedgithub"] = new_content;
-        }
-        else {
-            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
-            return replyContent; 
         }
         if (data["mastodon_domain"]) {
             new_content = htmlContent["verifiedgithub"].replace(/MASTODON_DOMAIN/g, data["mastodon_domain"]);
@@ -267,10 +305,28 @@ htmlContent["registration"] = `
             replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
             return replyContent;
         } 
-        else {
-            replyContent = htmlContent["header"] + htmlContent["verifiedgithub"];
-            return replyContent;
+    }
+
+    else if (status == "verifiedreddit") {
+        let new_content = "";
+        if (data["reddit_id"]) {
+            new_content = htmlContent["verifiedreddit"].replace(/REDDIT_ID/g, data["reddit_id"]);
+            htmlContent["verifiedreddit"] = new_content;
+        } 
+        if (data["mastodon_id"]) {
+            new_content = htmlContent["verifiedreddit"].replace(/MASTODON_ID/g, data["mastodon_id"]);
+            htmlContent["verifiedreddit"] = new_content;
         }
+        if (data["mastodon_name"]) {
+            new_content = htmlContent["verifiedreddit"].replace(/MASTODON_NAME/g, data["mastodon_name"]);
+            htmlContent["verifiedreddit"] = new_content;
+        }
+        if (data["mastodon_domain"]) {
+            new_content = htmlContent["verifiedreddit"].replace(/MASTODON_DOMAIN/g, data["mastodon_domain"]);
+            htmlContent["verifiedreddit"] = new_content;
+            replyContent = htmlContent["header"] + htmlContent["verifiedreddit"];
+            return replyContent;
+        } 
     }
 
     

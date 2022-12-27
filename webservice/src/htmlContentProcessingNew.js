@@ -38,7 +38,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     `;
 
     html_content["link_mastodon_id_social"] = `
-    <p>We have processed your request to link MASTODON_ID to SOCIAL_ID (click to ensure it works, you should see a JSON file). </p>
+    <p>We have processed your request to link MASTODON_ID to SOCIAL_ID (click to ensure it works, you should see a success and a link to your GitHub profile). </p>
     `;
 
     html_content["block_email"] = `

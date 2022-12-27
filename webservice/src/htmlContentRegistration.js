@@ -118,10 +118,10 @@ htmlContent["registration"] = `
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
     
-    <label for="github_id">GitHub ID: (not implemented yet)</label>
+    <label for="github_id">GitHub ID (optional, but you must list your Mastodon ID in you <a href="https://github.com/settings/profile">Bio</a>):</label>
     <input type="text" id="github_id" name="github_id" placeholder="github username or org name">
 
-    <label for="email_address">Email address:</label>
+    <label for="email_address">Email address (optional):</label>
     <input type="email" id="email_address" name="email_address" placeholder="username@example.org">
 
     <input type="submit" value="submit" name="submit">

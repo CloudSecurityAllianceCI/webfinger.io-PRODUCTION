@@ -54,6 +54,10 @@ export async function readProcessingRequestBodyPOST(request) {
     processing_results["reddit_id"] = await readProcessingRequestBodyPOSTReddit(request);
   }
 
+  if (request["twitter_id"] != false) {
+    processing_results["twitter_id"] = await readProcessingRequestBodyPOSTTwitter(request);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Handle email, logic goes inside each one
   if (request["email_address"] != false) {
@@ -122,6 +126,42 @@ export async function readProcessingRequestBodyPOSTReddit(request) {
     verify_api_post["API_TOKEN_VERIFICATION"] = API_TOKEN_VERIFICATION;
     verify_api_post["ACCOUNT_TYPE"] = "reddit";
     verify_api_post["ACCOUNT_NAME"] = request["reddit_id"];
+    verify_api_post["MASTODON_ID"] = request["mastodon_id"];
+    verify_api_post["CALLBACK_URL"] = "https://webfinger.io/apiv1/confirmation";
+    verify_api_post["CALLBACK_ACTION"] = "link_mastodon_id";
+    verify_api_post["CALLBACK_TOKEN"] = uuid_value;
+
+    api_return_code = await handleVerification(verify_api_url, verify_api_post); 
+    // DEBUG:
+    // no return here unbless it's done?
+    // return new Response(api_return_code, {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+    return "SUCCESS:LINK_MASTODON_ID";
+  }
+}
+
+export async function readProcessingRequestBodyPOSTTwitter(request) {
+  // check to see if we already have an auth key, they auto expire, this cuts down on abuse
+  KVkeyValue = "twitter:" + request["twitter_id"];
+  KVauthresult = await webfingerio_prod_auth.get(KVkeyValue);
+  // if we find an auth record that means we have a unique key already set (which expires after one hour) so 
+  // no post request and continue so we don't leak info
+  if (KVauthresult) {
+    // This means we'll hust ignore it and continue on
+    return "ERROR:AUTH_KEY_EXISTS";
+    // return new Response(gethtmlContentProcessing("badinput"), {status: "200", headers: {"content-type": "text/html;charset=UTF-8"}});
+  }
+  else {
+    // do the POST request to the verification API
+
+    // KVauthdataJSONString was set earlier
+    // KVkeyValue was set earlier
+    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
+
+    verify_api_url = API_URL_VERIFICATION;
+    verify_api_post = {};
+    verify_api_post["API_TOKEN_VERIFICATION"] = API_TOKEN_VERIFICATION;
+    verify_api_post["ACCOUNT_TYPE"] = "twitter";
+    verify_api_post["ACCOUNT_NAME"] = request["twitter_id"];
     verify_api_post["MASTODON_ID"] = request["mastodon_id"];
     verify_api_post["CALLBACK_URL"] = "https://webfinger.io/apiv1/confirmation";
     verify_api_post["CALLBACK_ACTION"] = "link_mastodon_id";

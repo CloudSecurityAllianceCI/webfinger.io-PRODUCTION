@@ -74,6 +74,16 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 	}
 }
 
+export function strictNormalizeTwitter(twitter_id_value) {
+	// TODO: we should lowercase this all?
+	var re_twitter_id = new RegExp("^[a-zA-Z0-9-_]{3,20}$");
+	if (re_twitter_id.test(twitter_id_value)) {
+		return(twitter_id_value);
+	} else {
+		return "";
+	}
+}
+
 export function strictNormalizeGitHub(github_id_value) {
 	// TODO: we should lowercase this all?
 	var re_github_id = new RegExp("^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$");
@@ -164,6 +174,14 @@ export function strictNormalizeWebData(requestdata) {
 	}
 	else {
 		normalized_data["email_address"] = false;
+	}
+
+	if (requestdata["twitter_id"]) {
+		// returns null or normalized email
+		normalized_data["twitter_id"] = strictNormalizeTwitter(requestdata["twitter_id"]);
+	}
+	else {
+		normalized_data["github_id"] = false;
 	}
 
 	if (requestdata["github_id"]) {

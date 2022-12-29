@@ -83,6 +83,17 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     }
 
 
+    // Twitter processing
+    if (processing_results["twitter_id"]){
+        if (processing_results["twitter_id"] == "SUCCESS:LINK_MASTODON_ID") {
+            new_content = new_content + html_content["link_mastodon_id_social"];
+        }
+        else if (processing_results["twitter_id"] == "SUCCESS:DELETE_RECORD") {
+            new_content = new_content + html_content["delete_record"];
+        }
+        new_content = new_content.replace(/SOCIAL_ID/g, "<a target=\"_blank\" href=\"https://webfinger.io/@TWITTER_ID\">https://webfinger.io/@TWITTER_ID</a>");
+    }
+
     // GitHub processing
     if (processing_results["github_id"]){
         if (processing_results["github_id"] == "SUCCESS:LINK_MASTODON_ID") {
@@ -117,6 +128,9 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     }
     if (data["email_address"]) {
         new_content = new_content.replace(/EMAIL_ADDRESS/g, data["email_address"]);
+    } 
+    if (data["twitter_id"]) {
+        new_content = new_content.replace(/TWITTER_ID/g, data["twitter_id"]);
     } 
     if (data["github_id"]) {
         new_content = new_content.replace(/GITHUB_ID/g, data["github_id"]);

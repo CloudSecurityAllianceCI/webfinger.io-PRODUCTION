@@ -52,6 +52,26 @@ export function gethtmlContentRegistration(status, data) {
 
     `;
 
+    htmlContent["verifiedtwitter"] = `
+
+    <p><strong>The GitHub user <a href="https://twitter.com/@TWITTER_ID">TWITTER_ID</a> has been verified by webfinger.io and is linked to 
+    <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
+
+    <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+
+    `;
+
     htmlContent["verifiedgithub"] = `
 
     <p><strong>The GitHub user <a href="https://github.com/GITHUB_ID">GITHUB_ID</a> has been verified by webfinger.io and is linked to 
@@ -94,7 +114,7 @@ export function gethtmlContentRegistration(status, data) {
 
 
     // TODO: make this more obvious and serve correctly
-    htmlContent["noverifiedemail"] = `<p>We could not verify EMAIL_ADDRESS</p>
+    htmlContent["noverifiedemail"] = `<p>We could not verify the email address EMAIL_ADDRESS</p>
     
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
@@ -111,9 +131,7 @@ export function gethtmlContentRegistration(status, data) {
     
     `;
 
-    
-
-    htmlContent["noverifiedgithub"] = `<p>We could not verify <a href="https://github.com/GITHUB_ID">GITHUB_ID</a>.</p>
+    htmlContent["noverifiedtwitter"] = `<p>We could not verify the Twitter account <a href="https://twitter.com/@TWITTER_ID">TWITTER_ID</a>.</p>
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
@@ -130,7 +148,24 @@ export function gethtmlContentRegistration(status, data) {
     
     `;
 
-    htmlContent["noverifiedreddit"] = `<p>We could not verify <a href="https://reddit.com/u/REDDIT_ID">REDDIT_ID</a>.</p>
+    htmlContent["noverifiedgithub"] = `<p>We could not verify the GitHub account <a href="https://github.com/GITHUB_ID">GITHUB_ID</a>.</p>
+    
+    <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
+
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
+  
+    <p>The Cloud Security Alliance privacy policy is available 
+    <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
+    </section>
+
+    </main>
+    </body>
+    </html>
+    
+    `;
+
+    htmlContent["noverifiedreddit"] = `<p>We could not verify the Reddit account <a href="https://reddit.com/u/REDDIT_ID">REDDIT_ID</a>.</p>
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
@@ -158,6 +193,9 @@ htmlContent["registration"] = `
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
     
+    <label for="twitter_id">Twitter ID (verify by listing your Mastodon ID in your <a target="_blank" href="https://twitter.com/settings/profile">"Profile"</a>):</label>
+    <input type="text" id="twitter_id" name="twitter_id" placeholder="twitter username">
+
     <label for="github_id">GitHub ID (verify by listing your Mastodon ID in your <a target="_blank" href="https://github.com/settings/profile">"Bio"</a>):</label>
     <input type="text" id="github_id" name="github_id" placeholder="github username">
 
@@ -195,10 +233,10 @@ htmlContent["registration"] = `
     <li>If you redirect your webfinger to us: @yourname@emaildomain</li>
     <li>Mastodon profile metadata verification: simply add a link
     <ul>
-        <li>Email: https://webfinger.io/yourname@emaildomain</li>
+        <li>Twitter: https://webfinger.io/@yourname or https://webfinger.io/twitter/yourname</li>
         <li>GitHub: https://webfinger.io/github/yourname</li>
-        <li>Reddit: https://webfinger.io/u/yourname</li>
-        <li>Twitter: Coming soon</li>
+        <li>Reddit: https://webfinger.io/u/yourname or https://webfinger.io/reddit/yourname</li>
+        <li>Email: https://webfinger.io/yourname@emaildomain or https://webfinger.io/email/yourname@emaildomain</li>
         <li>LinkedIN: Coming soon</li>
         </ul>
     </ul>
@@ -285,6 +323,28 @@ htmlContent["registration"] = `
         }
     }
 
+    else if (status == "verifiedtwitter") {
+        let new_content = "";
+        if (data["twitter_id"]) {
+            new_content = htmlContent["verifiedtwitter"].replace(/TWITTER_ID/g, data["twitter_id"]);
+            htmlContent["verifiedtwitter"] = new_content;
+        } 
+        if (data["mastodon_id"]) {
+            new_content = htmlContent["verifiedtwitter"].replace(/MASTODON_ID/g, data["mastodon_id"]);
+            htmlContent["verifiedtwitter"] = new_content;
+        }
+        if (data["mastodon_name"]) {
+            new_content = htmlContent["verifiedtwitter"].replace(/MASTODON_NAME/g, data["mastodon_name"]);
+            htmlContent["verifiedtwitter"] = new_content;
+        }
+        if (data["mastodon_domain"]) {
+            new_content = htmlContent["verifiedtwitter"].replace(/MASTODON_DOMAIN/g, data["mastodon_domain"]);
+            htmlContent["verifiedtwitter"] = new_content;
+            replyContent = htmlContent["header"] + htmlContent["verifiedtwitter"];
+            return replyContent;
+        } 
+    }
+
     else if (status == "verifiedgithub") {
         let new_content = "";
         if (data["github_id"]) {
@@ -339,11 +399,29 @@ htmlContent["registration"] = `
         return replyContent
     }
 
+    else if (status == "noverifiedtwitter") {
+        // We always have an email address, hopefully
+        new_content = htmlContent["noverifiedtwitter"].replace(/TWITTER_ID/g, data["twitter_id"]);
+        htmlContent["noverifiedtwitter"] = new_content;
+        replyContent = htmlContent["header"] + htmlContent["noverifiedtwitter"];
+
+        return replyContent
+    }
+
     else if (status == "noverifiedgithub") {
         // We always have an email address, hopefully
         new_content = htmlContent["noverifiedgithub"].replace(/GITHUB_ID/g, data["github_id"]);
         htmlContent["noverifiedgithub"] = new_content;
         replyContent = htmlContent["header"] + htmlContent["noverifiedgithub"];
+
+        return replyContent
+    }
+
+    else if (status == "noverifiedreddit") {
+        // We always have an email address, hopefully
+        new_content = htmlContent["noverifiedreddit"].replace(/REDDIT_ID/g, data["reddit_id"]);
+        htmlContent["noverifiedreddit"] = new_content;
+        replyContent = htmlContent["header"] + htmlContent["noverifiedreddit"];
 
         return replyContent
     }

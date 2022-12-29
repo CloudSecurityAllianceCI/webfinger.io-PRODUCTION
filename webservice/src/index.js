@@ -39,8 +39,10 @@ import { handleConfirmationGETRequest } from "./logicConfirmation.js"
 import { readConfirmationRequestBodyPOST } from "./logicConfirmation.js"
 
 import { handleVerifiedEmailGETRequest } from "./logicVerifiedPage.js"
+import { handleVerifiedTwitterGETRequest } from "./logicVerifiedPage.js"
 import { handleVerifiedGitHubGETRequest } from "./logicVerifiedPage.js"
 import { handleVerifiedRedditGETRequest } from "./logicVerifiedPage.js"
+
 
 // Processing email handler
 //import { handleEmail } from "./emailHandler.js"
@@ -209,13 +211,13 @@ async function handleGETRequest(requestData) {
     return replyBody;
   } 
   // startsWith @ means twitter
-  else if (requestURL.pathname.startsWith("/@")) {
-    return new Response("Twitter account", {status: "200", headers: {"content-type": "text/plain"}});
-    //replyBody = await handleVerifiedGETRequest(requestURL.pathname);
-    //return replyBody;
+  else if (requestURL.pathname.startsWith("/@") || requestURL.pathname.startsWith("/twitter/")) {
+    //return new Response("Twitter account", {status: "200", headers: {"content-type": "text/plain"}});
+    replyBody = await handleVerifiedTwitterGETRequest(requestURL.pathname);
+    return replyBody;
 	} 
   // an @ in it means it's an email
-  else if (requestURL.pathname.includes("@")) {
+  else if (requestURL.pathname.includes("@") || requestURL.pathname.startsWith("/email/")) {
     replyBody = await handleVerifiedEmailGETRequest(requestURL.pathname);
     return replyBody;
 	} 

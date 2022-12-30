@@ -54,7 +54,7 @@ export function gethtmlContentRegistration(status, data) {
 
     htmlContent["verifiedtwitter"] = `
 
-    <p><strong>The GitHub user <a href="https://twitter.com/@TWITTER_ID">TWITTER_ID</a> has been verified by webfinger.io and is linked to 
+    <p><strong>The Twitter user <a href="https://twitter.com/@TWITTER_ID">@TWITTER_ID</a> has been verified by webfinger.io and is linked to 
     <a rel="me" href="https://MASTODON_DOMAIN/@MASTODON_NAME">MASTODON_ID</a>.</strong></p>
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>

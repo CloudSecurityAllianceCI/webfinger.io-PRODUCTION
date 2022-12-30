@@ -7,14 +7,14 @@ export function strictNormalizeEmailAddress(email_address) {
 	// split into array
 	// remove dots and anything +after in name
 	if (email_address.length > 128) {
-		return false;
-	}
-	// Check a regex https://stackoverflow.com/questions/4964691/super-simple-email-validation-with-javascript
-	// 2,6 for tld needs to be 2,18 for NORTHWESTERNMUTUAL and . TRAVELERSINSURANCE
-	if (email_address.match(/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,18})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i) === null) {
 		return "";
 	}
 	email_address_lowercase = email_address.toLowerCase();
+	// Check a regex https://stackoverflow.com/questions/4964691/super-simple-email-validation-with-javascript
+	// 2,6 for tld needs to be 2,18 for NORTHWESTERNMUTUAL and . TRAVELERSINSURANCE
+	if (email_address_lowercase.match(/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,18})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i) === null) {
+		return "";
+	}
 	emailArray = email_address_lowercase.split("@");
 	emailNameNoDots = emailArray[0].replace(/\./g, "")
 	emailNameNoPlus = emailNameNoDots.replace(/\+.*$/g, "")
@@ -26,8 +26,13 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 	// @username@mastodon.server or mastodon.server/@username
 	// strip any http:// or https://
 	//
-	if (mastodon_id_value.startsWith("@")) {
-		mastodon_id_raw = mastodon_id_value.replace(/^@/, "");
+	if (mastodon_id_value.length > 128) {
+		return "";
+	}
+	mastodon_id_lowercase = mastodon_id_value.toLowerCase();
+
+	if (mastodon_id_lowercase.startsWith("@")) {
+		mastodon_id_raw = mastodon_id_lowercase.replace(/^@/, "");
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
 			return "";
@@ -36,8 +41,8 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 			return "@" + mastodon_id_normalized;
 		}
 	}
-	else if (mastodon_id_value.startsWith("https://")) {
-		mastodon_id_raw_url = mastodon_id_value.replace(/^https:\/\//, "");
+	else if (mastodon_id_lowercase.startsWith("https://")) {
+		mastodon_id_raw_url = mastodon_id_lowercase.replace(/^https:\/\//, "");
 		mastodon_id_array = mastodon_id_raw_url.split("/@");
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
@@ -48,8 +53,8 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 			return "@" + mastodon_id_normalized;
 		}
 	}
-	else if (mastodon_id_value.startsWith("http://")) {
-		mastodon_id_raw_url = mastodon_id_value.replace(/^https:\/\//, "");
+	else if (mastodon_id_lowercase.startsWith("http://")) {
+		mastodon_id_raw_url = mastodon_id_lowercase.replace(/^https:\/\//, "");
 		mastodon_id_array = mastodon_id_raw_url.split("/@");
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
@@ -62,7 +67,7 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 	}
 	// assume something like servername/@username
 	else {
-		mastodon_id_array = mastodon_id_value.split("/@");
+		mastodon_id_array = mastodon_id_lowercase.split("/@");
 		mastodon_id_raw = mastodon_id_array[1] + "@" + mastodon_id_array[0];
 		mastodon_id_normalized = strictNormalizeEmailAddress(mastodon_id_raw);
 		if (mastodon_id_normalized === false) {
@@ -74,31 +79,40 @@ export function strictNormalizeMastodon(mastodon_id_value) {
 	}
 }
 
-export function strictNormalizeTwitter(twitter_id_value) {
-	// TODO: we should lowercase this all?
-	var re_twitter_id = new RegExp("^[a-zA-Z0-9-_]{3,20}$");
-	if (re_twitter_id.test(twitter_id_value)) {
-		return(twitter_id_value);
-	} else {
-		return "";
-	}
-}
-
 export function strictNormalizeGitHub(github_id_value) {
-	// TODO: we should lowercase this all?
+	if (github_id_value.length > 39) {
+		return "";
+	}
+	github_id_lowercase = github_id_value.toLowerCase();
 	var re_github_id = new RegExp("^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$");
-	if (re_github_id.test(github_id_value)) {
-		return(github_id_value);
+	if (re_github_id.test(github_id_lowercase)) {
+		return(github_id_lowercase);
 	} else {
 		return "";
 	}
 }
 
-export function strictNormalizeReddit(github_id_value) {
-	// TODO: we should lowercase this all?
-	var re_github_id = new RegExp("^[a-zA-Z0-9-_]{3,20}$");
-	if (re_github_id.test(github_id_value)) {
-		return(github_id_value);
+export function strictNormalizeReddit(reddit_id_value) {
+	if (reddit_id_value.length > 20) {
+		return "";
+	}
+	reddit_id_lowercase = reddit_id_value.toLowerCase();
+	var re_reddit_id = new RegExp("^[a-zA-Z0-9-_]{3,20}$");
+	if (re_reddit_id.test(reddit_id_lowercase)) {
+		return(reddit_id_lowercase);
+	} else {
+		return "";
+	}
+}
+
+export function strictNormalizeTwitter(twitter_id_value) {
+	if (twitter_id_value.length > 15) {
+		return "";
+	}
+	twitter_id_lowercase = twitter_id_value.toLowerCase();
+	var re_twitter_id = new RegExp("^[a-zA-Z0-9-_]{1,20}$");
+	if (re_twitter_id.test(twitter_id_lowercase)) {
+		return(twitter_id_lowercase);
 	} else {
 		return "";
 	}

@@ -46,22 +46,40 @@ export async function readProcessingRequestBodyPOST(request) {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Handle github, logic goes inside each one
 
-  if (request["github_id"] != false) {
-    processing_results["github_id"] = await readProcessingRequestBodyPOSTGithub(request);
+  if (request["github_id"]) {
+    if (request["github_id"] == "") {
+      processing_results["github_id"] == "ERROR:BAD_ACCOUNT_NAME";
+    }
+    else {
+      processing_results["github_id"] = await readProcessingRequestBodyPOSTGithub(request);
+    }
   }
 
-  if (request["reddit_id"] != false) {
-    processing_results["reddit_id"] = await readProcessingRequestBodyPOSTReddit(request);
+  if (request["reddit_id"]) {
+    if (request["reddit_id"] == "") {
+      processing_results["reddit_id"] == "ERROR:BAD_ACCOUNT_NAME";
+    }
+    else {
+      processing_results["reddit_id"] = await readProcessingRequestBodyPOSTReddit(request);
+    }
+  }
+  
+  if (request["twitter_id"]) {
+    if (request["twitter_id"] == "") {
+      processing_results["twitter_id"] == "ERROR:BAD_ACCOUNT_NAME";
+    }
+    else {
+      processing_results["twitter_id"] = await readProcessingRequestBodyPOSTTwitter(request);
+    }
   }
 
-  if (request["twitter_id"] != false) {
-    processing_results["twitter_id"] = await readProcessingRequestBodyPOSTTwitter(request);
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // Handle email, logic goes inside each one
-  if (request["email_address"] != false) {
-    processing_results["email_address"] = await readProcessingRequestBodyPOSTemail(request);
+  if (request["email_address"]) {
+    if (request["email_address"] == "") {
+      processing_results["email_address"] == "ERROR:BAD_ACCOUNT_NAME";
+    }
+    else {
+      processing_results["email_address"] = await readProcessingRequestBodyPOSTemail(request);
+    }
   }
 
   return processing_results;
@@ -155,7 +173,9 @@ export async function readProcessingRequestBodyPOSTTwitter(request) {
 
     // KVauthdataJSONString was set earlier
     // KVkeyValue was set earlier
-    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
+    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString);
+    // no timeout for now since twitter keeps breaking
+//    await webfingerio_prod_auth.put(KVkeyValue, KVauthdataJSONString, {expirationTtl: 3600});
 
     verify_api_url = API_URL_VERIFICATION;
     verify_api_post = {};

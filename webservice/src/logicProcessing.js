@@ -40,6 +40,7 @@ export async function readProcessingRequestBodyPOST(request) {
   // The KV auth data is always the same, multiple records, e.g. email:, github:
   KVauthdata = {};
   KVauthdata["token"] = uuid_value;
+  KVauthdata["mastodon_id"] = request["mastodon_id"];
 
   KVauthdataJSONString = JSON.stringify(KVauthdata);
 
@@ -81,7 +82,6 @@ export async function readProcessingRequestBodyPOST(request) {
       processing_results["email_address"] = await readProcessingRequestBodyPOSTemail(request);
     }
   }
-
   return processing_results;
 }
 

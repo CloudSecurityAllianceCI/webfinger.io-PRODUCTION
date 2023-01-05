@@ -26,9 +26,22 @@ export function gethtmlContentRegistration(status, data) {
     <link rel="stylesheet" href="https://assetswebfingerio.pages.dev/main.css"/>
     </head>
     <body>
-    <main>
     <section class="container" id="registration">
-    <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1>
+
+    <div class="top-container container">
+    <div class="row">
+      <div class="column" style="text-align:center">
+        <img class="logo" src="https://assetswebfingerio.pages.dev/mastodon-validation.png" alt="Mastodon website showing verification of email and social media identities"/>
+      </div>
+      <div class="column">
+        <p><h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1></p>
+        <p> </p>
+      </div>
+    </div>
+  </div>
+   
+
+    
 
     `;
 
@@ -46,7 +59,7 @@ export function gethtmlContentRegistration(status, data) {
     <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
     </section>
 
-    </main>
+    
     </body>
     </html>
 

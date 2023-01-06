@@ -22,7 +22,7 @@ export function gethtmlContentProcessingNew(processing_results, data) {
     <body>
     <main>
     <section class="container" id="registration">
-    <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project</h1>
+    <h3>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project</h3>
     
     `
 

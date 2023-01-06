@@ -34,7 +34,7 @@ export function gethtmlContentRegistration(status, data) {
         <img class="logo" src="https://assetswebfingerio.pages.dev/mastodon-validation.png" alt="Mastodon website showing verification of email and social media identities"/>
       </div>
       <div class="column">
-        <p><h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project</h1></p>
+        <p><h3>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project</h3></p>
         <p> </p>
       </div>
     </div>

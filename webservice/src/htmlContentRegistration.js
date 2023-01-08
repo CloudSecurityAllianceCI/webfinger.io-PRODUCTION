@@ -17,7 +17,7 @@ export function gethtmlContentRegistration(status, data) {
     <html lang="en">
     <head>
     <meta charset="utf-8">
-    <title>webfinger.io (a Cloud Security Alliance Research beta)</title>
+    <title>webfinger.io (a Cloud Security Alliance Research project)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://assetswebfingerio.pages.dev/favicon.ico"/>
     <link rel="stylesheet" href="https://assetswebfingerio.pages.dev/fonts.googleapis.com-css-family-Roboto-300-300italic-700-700italic.txt"/>
@@ -26,9 +26,22 @@ export function gethtmlContentRegistration(status, data) {
     <link rel="stylesheet" href="https://assetswebfingerio.pages.dev/main.css"/>
     </head>
     <body>
-    <main>
     <section class="container" id="registration">
-    <h1>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta</h1>
+
+    <div class="top-container container">
+    <div class="row">
+      <div class="column" style="text-align:center">
+        <img class="logo" src="https://assetswebfingerio.pages.dev/mastodon-validation.png" alt="Mastodon website showing verification of email and social media identities"/>
+      </div>
+      <div class="column">
+        <p><h3>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project</h3></p>
+        <p> </p>
+      </div>
+    </div>
+  </div>
+   
+
+    
 
     `;
 
@@ -39,14 +52,14 @@ export function gethtmlContentRegistration(status, data) {
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
     <a href="https://cloudsecurityalliance.org/legal/privacy-notice/">here</a>.</p>
     </section>
 
-    </main>
+    
     </body>
     </html>
 
@@ -59,7 +72,7 @@ export function gethtmlContentRegistration(status, data) {
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -79,7 +92,7 @@ export function gethtmlContentRegistration(status, data) {
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -99,7 +112,7 @@ export function gethtmlContentRegistration(status, data) {
 
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -118,7 +131,7 @@ export function gethtmlContentRegistration(status, data) {
     
     <a class="button" href="https://webfinger.io/">Get your email address and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -135,7 +148,7 @@ export function gethtmlContentRegistration(status, data) {
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -152,7 +165,7 @@ export function gethtmlContentRegistration(status, data) {
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -169,7 +182,7 @@ export function gethtmlContentRegistration(status, data) {
     
     <a class="button" href="https://webfinger.io/">Get your social media and Mastodon ID verified</a>
 
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
@@ -177,18 +190,16 @@ export function gethtmlContentRegistration(status, data) {
     </section>
 
     </main>
-    </body>
+    </body> 
     </html>
     
     `;
 
 htmlContent["registration"] = `
 
-    <p><strong>webfinger.io new registration page</strong></p>
-
     <form action="https://` + globalDomain + `/apiv1/processing" method="post">
     
-    <p>Link your social accounts and/or email to your Mastodon ID:</p>
+    <p><strong>Verify and link</strong> your social accounts and/or email to your Mastodon ID:</p>
 
     <label for="mastodon_id">Mastodon ID:</label>
     <input type="text" id="mastodon_id" name="mastodon_id" placeholder="@username@mastodon.server or mastodon.server/@username">
@@ -252,7 +263,7 @@ htmlContent["registration"] = `
     characters. This service runs on Cloudflare Workers and KV store, and uses Mailchannels to send the emails. These providers log data such 
     as IP addresses accessing their service and the email address of email sent.</p>
     
-    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research beta. It is available in GitHub at
+    <p>webfinger.io is a <a href="https://cloudsecurityalliance.org/">Cloud Security Alliance</a> Research project. It is available in GitHub at
     <a href="https://github.com/cloudsecurityalliance/webfinger.io">https://github.com/cloudsecurityalliance/webfinger.io</a>.</p>
   
     <p>The Cloud Security Alliance privacy policy is available 
